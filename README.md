@@ -43,3 +43,34 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 
 You can then execute your native executable with: `./target/sergent-1.0-runner`
 
+
+## Packaging native container in a linux+docker env
+You need at least 4Go free memory to perform the build
+
+
+In Debian buster install java
+```
+sudo apt install openjdk-11-jdk
+echo "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/" > /etc/profile.d/java.sh
+source /etc/profile.d/java.sh
+```
+
+Install maven
+```
+sudo apt install maven
+echo "export MAVEN_HOME=/usr/share/maven" > /etc/profile.d/maven.sh
+source /etc/profile.d/maven.sh
+```
+
+Clone this repo and change permission on mvnw
+```
+cd home
+git clone 
+```
+
+Package the app in a native container
+```
+cd infra-sergent
+./mvnw package -Pnative -Dquarkus.native.container-build=true
+docker build -f src/main/docker/Dockerfile.native -t webdrone/sergent .
+```
