@@ -6,6 +6,17 @@ sergent should be deployed on any server we want to administrate.
 
 The environment variable `SERGENT_COMMAND_PATH` must contain the working path for the commands that Sergent will execute.
 
+## Command end point
+The role of sergent is to affer an endpoint that allow to execute management commands on the server
+
+Path : `sergent?command=<command-name>`
+
+to list all available commands use `list` command name
+
+```
+https://wdintegration.site/sergent?command=list
+```
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
