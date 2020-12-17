@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+  sergent:
+      image: webdrone/sergent
+      container_name: ${STACK_NAME}-postgres
+      networks:
+        - meveo
+      restart: unless-stopped
+      volumes:
+        - /home/env-integration-site/:/home/commands
+      environment:
+        SERGENT_COMMAND_PATH : /home/commands
+      ports:
+        - 8080:8080
