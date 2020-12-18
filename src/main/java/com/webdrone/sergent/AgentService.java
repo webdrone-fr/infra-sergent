@@ -91,6 +91,7 @@ public class AgentService {
                 this.error = "timeout";
             }
         } catch (Exception e) {
+            e.printStackTrace();
             if(procResult!=null){
                 setOutput(procResult);
             } else {
