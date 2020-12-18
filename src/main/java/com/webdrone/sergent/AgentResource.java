@@ -18,12 +18,21 @@ public class AgentResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String sergent(@QueryParam("command") @DefaultValue("list") String command,@HeaderParam(value="X-delay-in-sec") @DefaultValue("10") long timeoutSec) {
-        String result="{\"commands\":[\"list\",\"redeploy\"]}";
+        String result="{\"commands\":[\"list\",\"redeploy\",\"test\"]}";
         service.setWorkingPathName(System.getenv("SERGENT_COMMAND_PATH"));
         service.setTimeoutMillis(timeoutSec*1000);
         switch (command) {
             case "redeploy" :
                 service.setCommand("dockerpull.sh");
+                service.execute(null);
+                if(service.getError()==null){
+                    result = "{\"output\":\""+service.getOutput()+"\"}";
+                } else {
+                    result = "{\"error\":\""+service.getError()+"\"}";
+                }
+                break;
+            case "test" :
+                service.setCommand("test.sh");
                 service.execute(null);
                 if(service.getError()==null){
                     result = "{\"output\":\""+service.getOutput()+"\"}";
