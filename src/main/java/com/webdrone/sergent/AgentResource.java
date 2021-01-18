@@ -32,7 +32,7 @@ public class AgentResource {
                 }
                 break;
             case "test" :
-                service.setCommand("test.sh");
+                service.setCommand("./test.sh");
                 service.execute(null);
                 if(service.getError()==null){
                     result = "{\"output\":\""+service.getOutput()+"\"}";
