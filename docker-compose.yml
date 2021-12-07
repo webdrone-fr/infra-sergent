@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   sergent:
-      image: webdrone/sergent
+      image: manaty/sergent
       container_name: ${STACK_NAME}-postgres
       networks:
         - meveo

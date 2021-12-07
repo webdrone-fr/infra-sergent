@@ -83,15 +83,13 @@ Package the app in a native container
 ```
 cd infra-sergent
 ./mvnw package -Pnative -Dquarkus.native.container-build=true
-docker build -f src/main/docker/Dockerfile.native -t webdrone/sergent .
+docker build -f src/main/docker/Dockerfile.native -t manaty/sergent .
 ```
 
 ## Building native docker image using Jenkins
 
-Run [Jenkins job](https://jenkins.webdrone.fr/view/7%20-%20CrawlServices/job/dck_sergent/)
-
 To pull the image up in the server, run these commands:
 ```
 docker login
-docker pull webdronesas/sergent
+docker pull manaty/sergent
 ```

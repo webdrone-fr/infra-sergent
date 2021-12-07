@@ -1,4 +1,4 @@
-package com.webdrone.sergent;
+package net.manaty.sergent;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;

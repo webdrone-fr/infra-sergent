@@ -1,4 +1,4 @@
-package com.webdrone.sergent;
+package net.manaty.sergent;
 
 import io.quarkus.test.junit.NativeImageTest;
 
