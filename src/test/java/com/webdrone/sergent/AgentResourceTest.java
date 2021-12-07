@@ -15,7 +15,7 @@ public class AgentResourceTest {
           .when().get("/sergent?command=list")
           .then()
              .statusCode(200)
-             .body(is("{\"commands\":[\"list\",\"redeploy\"]}"));
+             .body(is("{\"commands\":[\"list\",\"dockerpull\",\"gitpull\"]}"));
     }
 
 }
