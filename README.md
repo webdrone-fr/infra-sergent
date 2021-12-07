@@ -92,6 +92,6 @@ Run [Jenkins job](https://jenkins.webdrone.fr/view/7%20-%20CrawlServices/job/dck
 
 To pull the image up in the server, run these commands:
 ```
-docker login nexus.webdrone.fr
-docker pull nexus.webdrone.fr/sergent
+docker login
+docker pull webdronesas/sergent
 ```
