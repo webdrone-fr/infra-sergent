@@ -2,14 +2,12 @@ version: '3.5'
 
 services:
   sergent:
-      image: manaty/sergent
-      container_name: ${STACK_NAME}-postgres
-      networks:
-        - meveo
-      restart: unless-stopped
-      volumes:
-        - /home/env-integration-site/:/home/commands
-      environment:
-        SERGENT_COMMAND_PATH : /home/commands
-      ports:
-        - 8080:8080
+    image: manaty/sergent
+    container_name: sergent
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    volumes:
+      - /home/env-directory:/home/env-directory
+    environment:
+      SERGENT_COMMAND_PATH : /home/commands

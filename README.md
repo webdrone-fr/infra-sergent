@@ -14,7 +14,7 @@ Path : `sergent?command=<command-name>`
 to list all available commands use `list` command name
 
 ```
-https://wdintegration.site/sergent?command=list
+https://<server-doman>/sergent?command=list
 ```
 
 ## Running the application in dev mode
@@ -86,10 +86,13 @@ cd infra-sergent
 docker build -f src/main/docker/Dockerfile.native -t manaty/sergent .
 ```
 
-## Building native docker image using Jenkins
+## Docker image
 
-To pull the image up in the server, run these commands:
+Sergent docker image is built automatically by Github Action.
+
+To pull the image up in the server, run this command:
+
 ```
 docker login
-docker pull manaty/sergent
+docker pull webdronesas/sergent
 ```
