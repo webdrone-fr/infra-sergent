@@ -41,6 +41,11 @@ public class AgentResource {
                 }
                 break;
         }
+        // example of command "deploy-kc-theme https://username:password@mydomain/meveo/git/mytheme"
+        /*if(command.startsWith("deploy-kc-theme")){
+            String kcThemeRepoUrl = command.substring("deploy-kc-theme".length()+1);
+            service.setCommand("./deploy-kc-theme.sh -giteRepo "+kcThemeRepoUrl);
+        }*/
         return result;
     }
 }
