@@ -17,7 +17,7 @@ public class AgentResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String sergent(@QueryParam("command") @DefaultValue("list") String command,@HeaderParam(value="X-delay-in-sec") @DefaultValue("10") long timeoutSec) {
+    public String sergent(@QueryParam("command") @DefaultValue("list") String command,@QueryParam("param")  List<String> paramList,@HeaderParam(value="X-delay-in-sec") @DefaultValue("10") long timeoutSec) {
         String result="{\"commands\":[\"list\",\"dockerpull\",\"gitpull\"]}";
         service.setWorkingPathName(System.getenv("SERGENT_COMMAND_PATH"));
         service.setTimeoutMillis(timeoutSec*1000);
@@ -40,12 +40,13 @@ public class AgentResource {
                     result = "{\"error\":\""+service.getError()+"\"}";
                 }
                 break;
+            //example of http "/sergent?command=deploy-kc-theme&param=https%3A%2F%2Fusername%3Apassword%40mydomain%2Fmeveo%2Fgit%2Fmytheme"
+            // and of shell command "deploy-kc-theme https://username:password@mydomain/meveo/git/mytheme"
+            /*case "deploy-kc-theme":
+               String kcThemeRepoUrl =paramList.get(0);
+               service.setCommand("./deploy-kc-theme.sh -giteRepo "+kcThemeRepoUrl);
+            */
         }
-        // example of command "deploy-kc-theme https://username:password@mydomain/meveo/git/mytheme"
-        /*if(command.startsWith("deploy-kc-theme")){
-            String kcThemeRepoUrl = command.substring("deploy-kc-theme".length()+1);
-            service.setCommand("./deploy-kc-theme.sh -giteRepo "+kcThemeRepoUrl);
-        }*/
         return result;
     }
 }
