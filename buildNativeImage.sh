@@ -26,5 +26,6 @@ then
   echo "export MAVEN_HOME=/usr/share/maven" > /etc/profile.d/maven.sh
   source /etc/profile.d/maven.sh
 fi
+
 sudo chown a+x mvnw
 ./mvnw package -Pnative -Dquarkus.native.container-build=true -Dquarkus.container-image.build=true -Dquarkus.container-image.group=manaty
