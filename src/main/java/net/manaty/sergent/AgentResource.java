@@ -3,6 +3,7 @@ package net.manaty.sergent;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -11,11 +12,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jboss.logging.Logger;
 
 @Path("/sergent")
 public class AgentResource {
-    private static final List<String> COMMANDS = List
-            .of("list", "dockerpull", "gitpull", "deploy-kc-theme");
+    private static final Logger LOG = Logger.getLogger(AgentResource.class);
+    private static final List<String> COMMANDS = List.of(
+            "list",
+            "dockerpull",
+            "gitpull",
+            "deploy-kc-theme");
 
     @Inject
     AgentService service;
@@ -24,11 +32,12 @@ public class AgentResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String sergent(
             @QueryParam("command") @DefaultValue("list") String command,
-            @QueryParam("param") List<String> paramList,
+            @QueryParam("params") String params,
             @HeaderParam(value = "X-delay-in-sec") @DefaultValue("10") long timeoutSec) {
         String result = null;
         service.setWorkingPathName(System.getenv("SERGENT_COMMAND_PATH"));
         service.setTimeoutMillis(timeoutSec * 1000);
+        LOG.debug("command: " + command);
 
         switch (command) {
             case "dockerpull":
@@ -38,17 +47,17 @@ public class AgentResource {
                 result = execute("./gitpull.sh");
                 break;
             case "deploy-kc-theme":
-                // sample request
-                // https://username:password@mydomain/meveo/api/rest/admin/files/downloadFile?file=git/keycloak-themes/themeName.zip
-                // must be url-encoded e.g.
-                // https%3A%2F%2Fusername%3Apassword%40mydomain%2Fmeveo%2Fapi%2Frest%2Fadmin%2Ffiles%2FdownloadFile%3Ffile%3Dgit%2Fkeycloak-themes%2FthemeName.zip
-
-                String encodedUrl = paramList.get(0);
                 try {
-                    String themeUrl = URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8.name());
-                    result = execute("./deploy-kc-theme.sh -theme " + themeUrl);
+                    LOG.debug("params: " + params);
+                    String scriptCommand = new StringBuilder("./deploy-kc-theme.sh")
+                            .append(parseParameters(params))
+                            .toString();
+                    LOG.debug("scriptCommand: " + scriptCommand);
+                    result = execute(scriptCommand);
                 } catch (Exception e) {
-                    result = String.format("{\"error\":\"%s\"}", "Error decoding: " + encodedUrl);
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error deploying theme: " + params);
+                    LOG.error("Failed to deploy theme: " + params, e);
                 }
                 break;
             default:
@@ -56,6 +65,25 @@ public class AgentResource {
                         .map(cmd -> String.format("\"%s\"", cmd)).toArray(String[]::new)));
         }
         return result;
+    }
+
+    private String parseParameters(String params) throws Exception {
+        Map<String, String> parameterMap =
+                new ObjectMapper().readValue(params, new TypeReference<Map<String, String>>() {});
+        LOG.debug("parameterMap: " + parameterMap);
+        String parameters = parameterMap.entrySet()
+                .stream()
+                .reduce(
+                        new StringBuilder(),
+                        (parameter, entry) -> parameter.append(" -")
+                                .append(entry.getKey())
+                                .append("=")
+                                .append(entry.getValue()),
+                        (previousParameter, nextParameter) -> previousParameter
+                                .append(nextParameter))
+                .toString();
+        LOG.debug("parameters: " + parameters);
+        return parameters;
     }
 
     private String execute(String command) {
