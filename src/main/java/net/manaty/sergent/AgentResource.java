@@ -35,8 +35,10 @@ public class AgentResource {
             @QueryParam("params") String params,
             @HeaderParam(value = "X-delay-in-sec") @DefaultValue("10") long timeoutSec) {
         String result = null;
-        service.setWorkingPathName(System.getenv("SERGENT_COMMAND_PATH"));
+        String commandPath = System.getenv("SERGENT_COMMAND_PATH");
+        service.setWorkingPathName(commandPath);
         service.setTimeoutMillis(timeoutSec * 1000);
+        LOG.debug("commandPath: " + commandPath);
         LOG.debug("command: " + command);
 
         switch (command) {
@@ -75,9 +77,9 @@ public class AgentResource {
                 .stream()
                 .reduce(
                         new StringBuilder(),
-                        (parameter, entry) -> parameter.append(" -")
+                        (parameter, entry) -> parameter.append(" --")
                                 .append(entry.getKey())
-                                .append("=")
+                                .append(" ")
                                 .append(entry.getValue()),
                         (previousParameter, nextParameter) -> previousParameter
                                 .append(nextParameter))
