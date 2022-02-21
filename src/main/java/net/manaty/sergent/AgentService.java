@@ -11,8 +11,12 @@ import org.buildobjects.process.ProcBuilder;
 import org.buildobjects.process.ProcResult;
 import org.buildobjects.process.TimeoutException;
 
+import org.jboss.logging.Logger;
+
 @RequestScoped
 public class AgentService {
+
+    private static final Logger LOG = Logger.getLogger(AgentService.class);
     
     private long timeoutMillis;
     private String command;
@@ -71,6 +75,7 @@ public class AgentService {
 
     public void execute(Map<String,Object> params){
         ProcBuilder builder = new ProcBuilder(command);
+        LOG.debug("workingPath: " + workingPath);
         if(workingPath!=null){
             builder.withWorkingDirectory(workingPath);
         }

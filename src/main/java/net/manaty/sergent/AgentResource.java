@@ -1,7 +1,5 @@
 package net.manaty.sergent;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
