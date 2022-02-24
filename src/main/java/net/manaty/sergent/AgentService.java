@@ -1,8 +1,6 @@
 package net.manaty.sergent;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
@@ -11,17 +9,18 @@ import org.buildobjects.process.ProcBuilder;
 import org.buildobjects.process.ProcResult;
 import org.buildobjects.process.TimeoutException;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.jboss.logging.Logger;
 
 @RequestScoped
 public class AgentService {
 
     private static final Logger LOG = Logger.getLogger(AgentService.class);
-    
+
     private long timeoutMillis;
     private String command;
-    private List<String> args = new ArrayList<>();
-    String[] argsTemplate = new String[]{};
     private String proc;
     private String output;
     private String error;
@@ -29,75 +28,93 @@ public class AgentService {
     private long executionTime;
     private File workingPath;
 
-    public void setWorkingPathName(String workingPathName){
-        if(workingPathName==null){
+    public void setWorkingPathName(String workingPathName) {
+        if (workingPathName == null) {
             this.workingPath = null;
         } else {
             this.workingPath = new File(workingPathName);
-        } 
+        }
     }
 
-    public void setTimeoutMillis(long timeoutMillis){
+    public void setTimeoutMillis(long timeoutMillis) {
         this.timeoutMillis = timeoutMillis;
     }
 
-    public void setCommand(String command){
+    public void setCommand(String command) {
         this.command = command;
     }
 
-    public String getProc(){
+    public String getProc() {
         return proc;
     }
 
-    public String getOutput(){
+    public String getOutput() {
         return output;
     }
 
-    public String getError(){
+    public String getError() {
         return error;
     }
 
-    public int getExitValue(){
+    public int getExitValue() {
         return exitValue;
     }
 
-    public long getExecutionTime(){
+    public long getExecutionTime() {
         return executionTime;
     }
 
-    private void setOutput(ProcResult procResult){
-        this.proc=procResult.getProcString();
-        this.output=procResult.getOutputString();
-        this.error=procResult.getErrorString();
-        this.exitValue=procResult.getExitValue();
+    private void setOutput(ProcResult procResult) {
+        this.proc = procResult.getProcString();
+        this.output = procResult.getOutputString();
+        this.error = procResult.getErrorString();
+        this.exitValue = procResult.getExitValue();
         this.executionTime = procResult.getExecutionTime();
     }
 
-    public void execute(Map<String,Object> params){
+    public void execute(String params) {
         ProcBuilder builder = new ProcBuilder(command);
+
+        if (params != null && !params.isEmpty()) {
+            String[] parameters = null;
+            this.error = null;
+            try {
+                Map<String, String> parameterMap = new ObjectMapper()
+                        .readValue(params, new TypeReference<Map<String, String>>() {});
+                LOG.debug("parameterMap: " + parameterMap);
+                parameters = parameterMap.entrySet().stream()
+                        .map(entry -> String.format("--%s %s", entry.getKey(), entry.getValue()))
+                        .toArray(String[]::new);
+            } catch (Exception e) {
+                LOG.error("Failed to parse parameters: " + params, e);
+                this.error = "Failed to parse parameters: " + params;
+                return;
+            }
+            LOG.debug("parameters: " + parameters);
+            builder.withArgs(parameters);
+        }
+
         LOG.debug("workingPath: " + workingPath);
-        if(workingPath!=null){
+        if (workingPath != null) {
             builder.withWorkingDirectory(workingPath);
         }
-        if(args.size()>0){
-            builder.withArgs(args.toArray(argsTemplate));
-        } 
-        if(timeoutMillis>0){
+
+        if (timeoutMillis > 0) {
             builder.withTimeoutMillis(timeoutMillis);
         }
-        ProcResult procResult=null;
+        ProcResult procResult = null;
         try {
             procResult = builder.run();
             setOutput(procResult);
         } catch (TimeoutException e) {
-            if(procResult!=null){
+            if (procResult != null) {
                 setOutput(procResult);
             } else {
                 this.error = "timeout";
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if(procResult!=null){
+            if (procResult != null) {
                 setOutput(procResult);
             } else {
                 this.error = e.getMessage();
