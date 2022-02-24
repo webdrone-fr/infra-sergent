@@ -65,7 +65,7 @@ public class AgentService {
     }
 
     private void setOutput(ProcResult procResult) {
-        this.proc = procResult.getProcString();
+        this.proc = procResult.getCommandLine();
         this.output = procResult.getOutputString();
         this.error = procResult.getErrorString();
         this.exitValue = procResult.getExitValue();
@@ -76,22 +76,21 @@ public class AgentService {
         ProcBuilder builder = new ProcBuilder(command);
 
         if (params != null && !params.isEmpty()) {
-            String[] parameters = null;
             this.error = null;
             try {
                 Map<String, String> parameterMap = new ObjectMapper()
                         .readValue(params, new TypeReference<Map<String, String>>() {});
                 LOG.debug("parameterMap: " + parameterMap);
-                parameters = parameterMap.entrySet().stream()
-                        .map(entry -> String.format("--%s %s", entry.getKey(), entry.getValue()))
-                        .toArray(String[]::new);
+                parameterMap.entrySet().stream()
+                        .forEach(entry -> {
+                            builder.withArg("--" + entry.getKey());
+                            builder.withArg(entry.getValue());
+                        });
             } catch (Exception e) {
                 LOG.error("Failed to parse parameters: " + params, e);
                 this.error = "Failed to parse parameters: " + params;
                 return;
             }
-            LOG.debug("parameters: " + parameters);
-            builder.withArgs(parameters);
         }
 
         LOG.debug("workingPath: " + workingPath);
@@ -104,6 +103,7 @@ public class AgentService {
         }
         ProcResult procResult = null;
         try {
+            LOG.debug("command: " + builder.getCommandLine());
             procResult = builder.run();
             setOutput(procResult);
         } catch (TimeoutException e) {
