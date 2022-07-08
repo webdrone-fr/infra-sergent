@@ -12,7 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.annotations.Body;
 
 @Path("/sergent")
 public class AgentResource {
@@ -83,6 +82,7 @@ public class AgentResource {
                 if (resultGitpull.contains("output")){
                     try {
                         LOG.debug("params: " + params);
+                        String setEnvVariables = execute("source .env");
                         String stackName = System.getenv("STACK_NAME");
                         result = execute("docker exec -it "+ stackName + "-meveo curl --max-time "+ timeoutSec +" -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
                     } catch (Exception e) {
