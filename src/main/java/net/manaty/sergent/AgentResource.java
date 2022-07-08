@@ -79,7 +79,7 @@ public class AgentResource {
         LOG.debug("command: " + command);
         switch (command) {
             case "update-modules":
-                String resultGitpull = execute(".gitpull.sh");
+                String resultGitpull = execute("./gitpull.sh");
                 if (resultGitpull.contains("output")){
                     try {
                         LOG.debug("params: " + params);
