@@ -2,14 +2,17 @@ package net.manaty.sergent;
 
 import java.util.List;
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.annotations.Body;
 
 @Path("/sergent")
 public class AgentResource {
@@ -60,10 +63,6 @@ public class AgentResource {
                     try {
                         LOG.debug("params: " + params);
                         String stackName = System.getenv("STACK_NAME");
-                        // this should be async => needs new execute method
-                        // callback to be done by meveo target
-                        // need to add wait time for meveo to confirm meveo is up
-                        // could have initial response as acknowledgement of reception of command
                         result = execute("docker exec -it "+ stackName + "-meveo curl -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
@@ -79,6 +78,42 @@ public class AgentResource {
             default:
                 result = String.format("{\"commands\":[%s]}", String.join(",", COMMANDS.stream()
                         .map(cmd -> String.format("\"%s\"", cmd)).toArray(String[]::new)));
+        }
+        return result;
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String sergentPost(
+            @QueryParam("command") String command,
+            String params,
+            @HeaderParam(value = "X-delay-in-sec") @DefaultValue("10") long timeoutSec) {
+        String result = null;
+        String commandPath = System.getenv("SERGENT_COMMAND_PATH");
+        service.setWorkingPathName(commandPath);
+        service.setTimeoutMillis(timeoutSec * 1000);
+        LOG.debug("commandPath: " + commandPath);
+        LOG.debug("command: " + command);
+        switch (command) {
+            case "update-modules":
+                String resultGitpull = execute(".gitpull.sh");
+                if (resultGitpull.contains("output")){
+                    try {
+                        LOG.debug("params: " + params);
+                        String stackName = System.getenv("STACK_NAME");
+                        result = execute("docker exec -it "+ stackName + "-meveo curl --max-time 2 -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
+                    } catch (Exception e) {
+                        result = String.format("{\"error\":\"%s\"}",
+                                "Error updating modules: " + params);
+                        LOG.error("Failed to update modules: " + params, e);
+                    }
+                } else {
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error executing gitpull for update-modules" + params);
+                    LOG.error("Failed to execute gitpull for update-modules");
+                }
+                break;
         }
         return result;
     }
