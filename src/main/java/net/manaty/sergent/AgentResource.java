@@ -82,9 +82,7 @@ public class AgentResource {
                 if (resultGitpull.contains("output")){
                     try {
                         LOG.debug("params: " + params);
-                        String setEnvVariables = execute("source .env");
-                        String stackName = System.getenv("STACK_NAME");
-                        result = execute("docker exec -it "+ stackName + "-meveo curl --max-time "+ timeoutSec +" -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
+                        result = execute("source ../.env; docker exec -it $STACK_NAME-meveo curl --max-time "+ timeoutSec +" -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
                                 "Error updating modules: " + params);
