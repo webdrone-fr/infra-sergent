@@ -57,24 +57,6 @@ public class AgentResource {
                     LOG.error("Failed to deploy theme: " + params, e);
                 }
                 break;
-            case "update-modules":
-                String resultGitpull = execute(".gitpull.sh");
-                if (resultGitpull.contains("output")){
-                    try {
-                        LOG.debug("params: " + params);
-                        String stackName = System.getenv("STACK_NAME");
-                        result = execute("docker exec -it "+ stackName + "-meveo curl -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
-                    } catch (Exception e) {
-                        result = String.format("{\"error\":\"%s\"}",
-                                "Error updating modules: " + params);
-                        LOG.error("Failed to update modules: " + params, e);
-                    }
-                } else {
-                    result = String.format("{\"error\":\"%s\"}",
-                            "Error executing gitpull for update-modules" + params);
-                    LOG.error("Failed to execute gitpull for update-modules");
-                }
-                break;
             default:
                 result = String.format("{\"commands\":[%s]}", String.join(",", COMMANDS.stream()
                         .map(cmd -> String.format("\"%s\"", cmd)).toArray(String[]::new)));
@@ -102,7 +84,7 @@ public class AgentResource {
                     try {
                         LOG.debug("params: " + params);
                         String stackName = System.getenv("STACK_NAME");
-                        result = execute("docker exec -it "+ stackName + "-meveo curl --max-time 2 -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
+                        result = execute("docker exec -it "+ stackName + "-meveo curl --max-time "+ timeoutSec +" -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
                                 "Error updating modules: " + params);
