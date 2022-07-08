@@ -18,7 +18,8 @@ public class AgentResource {
             "list",
             "dockerpull",
             "gitpull",
-            "deploy-kc-theme");
+            "deploy-kc-theme",
+            "update-modules");
 
     @Inject
     AgentService service;
@@ -51,6 +52,28 @@ public class AgentResource {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error deploying theme: " + params);
                     LOG.error("Failed to deploy theme: " + params, e);
+                }
+                break;
+            case "update-modules":
+                String resultGitpull = execute(".gitpull.sh");
+                if (resultGitpull.contains("output")){
+                    try {
+                        LOG.debug("params: " + params);
+                        String stackName = System.getenv("STACK_NAME");
+                        // this should be async => needs new execute method
+                        // callback to be done by meveo target
+                        // need to add wait time for meveo to confirm meveo is up
+                        // could have initial response as acknowledgement of reception of command
+                        result = execute("docker exec -it "+ stackName + "-meveo curl -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
+                    } catch (Exception e) {
+                        result = String.format("{\"error\":\"%s\"}",
+                                "Error updating modules: " + params);
+                        LOG.error("Failed to update modules: " + params, e);
+                    }
+                } else {
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error executing gitpull for update-modules" + params);
+                    LOG.error("Failed to execute gitpull for update-modules");
                 }
                 break;
             default:
