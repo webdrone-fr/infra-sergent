@@ -88,7 +88,7 @@ public class AgentResource {
                         String outputStr= "output\":\"";
                         String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}")).stripTrailing();
                         LOG.debug("Stack Name : " + stackName);
-                        result = execute("docker", ("exec "+ stackName +"-meveo curl -H 'Content-Type: application/json; charset=UTF-8' --max-time "+ timeoutSec +" -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params).split("\\s+") );
+                        result = execute("docker", ("exec "+ stackName +"-meveo curl  -X POST -H 'Content-Type: application/json; charset=UTF-8' --max-time "+ timeoutSec +" -d params=\"" + params + "\" localhost:8080/meveo/api/rest/module/initDefault").split("\\s+") );
                         LOG.debug("Result: "+ result);
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
