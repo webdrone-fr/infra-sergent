@@ -86,7 +86,7 @@ public class AgentResource {
                         LOG.debug("params: " + params);
                         String stackNameOutput = execute("./getstackname.sh");
                         String outputStr= "output\":\"";
-                        String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}"));
+                        String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}")).stripTrailing();
                         LOG.debug("Stack Name : " + stackName);
                         result = execute("docker", ("exec "+ stackName +"-meveo curl --max-time "+ timeoutSec +" -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params).split("\\s+") );
                         LOG.debug("Result: "+ result);
