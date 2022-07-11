@@ -13,6 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jboss.logging.Logger;
 
+
 @Path("/sergent")
 public class AgentResource {
     private static final Logger LOG = Logger.getLogger(AgentResource.class);
@@ -79,10 +80,16 @@ public class AgentResource {
         switch (command) {
             case "update-modules":
                 String resultGitpull = execute("./gitpull.sh");
+                LOG.debug("GitPull Result: "+resultGitpull);
                 if (resultGitpull.contains("output")){
                     try {
                         LOG.debug("params: " + params);
-                        result = execute("source ../.env; docker exec -it $STACK_NAME-meveo curl --max-time "+ timeoutSec +" -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params);
+                        String stackNameOutput = execute("./getstackname.sh");
+                        String outputStr= "output\":\"";
+                        String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}"));
+                        LOG.debug("Stack Name : " + stackName);
+                        result = execute("docker", ("exec "+ stackName +"-meveo curl --max-time "+ timeoutSec +" -X POST localhost:8080/meveo/api/rest/module/initDefault -d params=" + params).split("\\s+") );
+                        LOG.debug("Result: "+ result);
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
                                 "Error updating modules: " + params);
@@ -91,7 +98,7 @@ public class AgentResource {
                 } else {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing gitpull for update-modules" + params);
-                    LOG.error("Failed to execute gitpull for update-modules");
+                    LOG.error("Failed to execute gitpull for update-modules" + resultGitpull);
                 }
                 break;
         }
@@ -101,11 +108,11 @@ public class AgentResource {
     private String execute(String command) {
         String result = null;
         service.setCommand(command);
-        service.execute(null);
+        service.execute((String[])null);
         if (service.getError() == null) {
             result = String.format("{\"output\":\"%s\"}", service.getOutput());
         } else {
-            result = String.format("{\"error\":\"%s\"}", service.getError());
+            result = String.format("{\"error\":\"%s\",\"output\":\"%s\"}", service.getError(), service.getOutput());
         }
         return result;
     }
@@ -117,8 +124,20 @@ public class AgentResource {
         if (service.getError() == null) {
             result = String.format("{\"output\":\"%s\"}", service.getOutput());
         } else {
-            result = String.format("{\"error\":\"%s\"}", service.getError());
+            result = String.format("{\"error\":\"%s\",\"output\":\"%s\"}", service.getError(), service.getOutput());
         }
+        return result;
+    }
+
+    private String execute(String command, String[] params) {
+        String result = null;
+        service.setCommand(command);
+        service.execute(params);
+        if (service.getError() == null) {
+            result = String.format("{\"output\":\"%s\"}", service.getOutput());
+        } else {
+            result = String.format("{\"error\":\"%s\",\"output\":\"%s\"}", service.getError(), service.getOutput());
+         }
         return result;
     }
 }

@@ -1,6 +1,7 @@
 package net.manaty.sergent;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
@@ -93,6 +94,32 @@ public class AgentService {
             }
         }
 
+        doExecute(builder);
+    }
+
+    public void execute(String[] params) {
+        ProcBuilder builder = new ProcBuilder(command);
+
+        if (params != null && params.length>0) {
+            this.error = null;
+            try {
+                LOG.debug("parameterArray: " + params);
+                Arrays.asList(params).stream()
+                        .forEach(entry -> {
+                            builder.withArg(entry);
+                        });
+            } catch (Exception e) {
+                LOG.error("Failed to parse parameters: " + params, e);
+                this.error = "Failed to parse parameters: " + params;
+                return;
+            }
+        }
+
+        doExecute(builder);
+    }
+
+
+    private void doExecute(ProcBuilder builder) {
         LOG.debug("workingPath: " + workingPath);
         if (workingPath != null) {
             builder.withWorkingDirectory(workingPath);
