@@ -92,7 +92,7 @@ public class AgentResource {
                         String username = usernameOutput.substring(usernameOutput.indexOf(outputStr)+outputStr.length(),usernameOutput.indexOf("\"}")).stripTrailing();
                         String password = passOutput.substring(passOutput.indexOf(outputStr)+outputStr.length(),passOutput.indexOf("\"}")).stripTrailing();
                         LOG.debug("Stack Name : " + stackName);
-                        String target = "http://localhost:8080/meveo/api/rest/module/initDefault";
+                        String target = "localhost://127.0.0.1:8080/meveo/api/rest/module/initDefault";
                         String contentType = "Content-Type:application/json".replaceAll("\\s", "");
                         params = params.replaceAll("\\s", "");
                         result = execute("docker", ("exec -t "+ stackName +"-meveo curl "+ target + " -u " + username + ":" + password + " -H " + contentType + " --max-time "+ timeoutSec +" -d '" + params + "'").split("\\s+"));
