@@ -85,10 +85,14 @@ public class AgentResource {
                     try {
                         LOG.debug("params: " + params);
                         String stackNameOutput = execute("./getstackname.sh");
+                        String usernameOutput = execute("./getusername.sh");
+                        String passOutput = execute("./getpass.sh");
                         String outputStr= "output\":\"";
                         String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}")).stripTrailing();
+                        String username = usernameOutput.substring(usernameOutput.indexOf(outputStr)+outputStr.length(),usernameOutput.indexOf("\"}")).stripTrailing();
+                        String password = passOutput.substring(passOutput.indexOf(outputStr)+outputStr.length(),passOutput.indexOf("\"}")).stripTrailing();
                         LOG.debug("Stack Name : " + stackName);
-                        result = execute("docker", ("exec -t "+ stackName +"-meveo curl -X POST 'localhost:8080/meveo/api/rest/module/initDefault' -u \\$MEVEO_ADMIN_USERNAME:\\$MEVEO_ADMIN_PASSWORD -H 'Content-Type: application/json' --max-time "+ timeoutSec +" -d '" + params + "'").split("\\s+"));
+                        result = execute("docker", ("exec -t "+ stackName +"-meveo curl -X POST 'localhost:8080/meveo/api/rest/module/initDefault' -u " + username+":"+password + " -H 'Content-Type: application/json' --max-time "+ timeoutSec +" -d '" + params + "'").split("\\s+"));
                         LOG.debug("Result: "+ result);
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
