@@ -93,7 +93,7 @@ public class AgentResource {
                         String password = passOutput.substring(passOutput.indexOf(outputStr)+outputStr.length(),passOutput.indexOf("\"}")).stripTrailing();
                         LOG.debug("Stack Name : " + stackName);
                         params = params.replaceAll("\\s", "");
-                        result = execute("docker", ("exec -t "+ stackName +"-meveo curl -X POST localhost:8080/meveo/api/rest/module/initDefault -u " + username + ":" + password + " -H 'Content-Type:application/json' --max-time "+ timeoutSec +" --data-binary '" + params + "'").split("\\s+"));
+                        result = execute("docker", ("exec -t "+ stackName +"-meveo curl -X POST -H 'Content-Type:application/json' localhost:8080/meveo/api/rest/module/initDefault -u " + username + ":" + password + " --max-time "+ timeoutSec +" --data-binary '" + params + "'").split("\\s+"));
                         LOG.debug("Result: "+ result);
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
