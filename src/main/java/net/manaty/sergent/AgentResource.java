@@ -84,9 +84,9 @@ public class AgentResource {
                 if (resultGitpull.contains("output")){
                     try {
                         LOG.debug("params: " + params);
-                        String stackNameOutput = execute("./getenvvalue.sh STACK_NAME");
-                        String usernameOutput = execute("./getenvvalue.sh MEVEO_ADMIN_USERNAME");
-                        String passOutput = execute("./getenvvalue.sh MEVEO_ADMIN_PASSWORD");
+                        String stackNameOutput = executeMult("./getenvvalue.sh","STACK_NAME");
+                        String usernameOutput = executeMult("./getenvvalue.sh","MEVEO_ADMIN_USERNAME");
+                        String passOutput = executeMult("./getenvvalue.sh","MEVEO_ADMIN_PASSWORD");
                         String outputStr= "output\":\"";
                         String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}")).stripTrailing();
                         String username = usernameOutput.substring(usernameOutput.indexOf(outputStr)+outputStr.length(),usernameOutput.indexOf("\"}")).stripTrailing();
