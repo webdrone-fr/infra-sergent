@@ -84,16 +84,15 @@ public class AgentResource {
                 if (resultGitpull.contains("output")){
                     try {
                         LOG.debug("params: " + params);
-                        String stackNameOutput = execute("./getstackname.sh");
-                        String usernameOutput = execute("./getusername.sh");
-                        String passOutput = execute("./getpass.sh");
+                        String stackNameOutput = execute("./getenvvalue.sh STACK_NAME");
+                        String usernameOutput = execute("./getenvvalue.sh MEVEO_ADMIN_USERNAME");
+                        String passOutput = execute("./getenvvalue.sh MEVEO_ADMIN_PASSWORD");
                         String outputStr= "output\":\"";
                         String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}")).stripTrailing();
                         String username = usernameOutput.substring(usernameOutput.indexOf(outputStr)+outputStr.length(),usernameOutput.indexOf("\"}")).stripTrailing();
                         String password = passOutput.substring(passOutput.indexOf(outputStr)+outputStr.length(),passOutput.indexOf("\"}")).stripTrailing();
                         LOG.debug("Stack Name : " + stackName);
-                        params = params.replaceAll("\\s", "");
-                        result = execute("docker", ("exec -t "+ stackName +"-meveo curl -X POST -H \"Content-Type: application/json\" -u " + username + ":" + password + " --max-time "+ timeoutSec +" --data '" + params + "' localhost:8080/meveo/api/rest/module/initDefault").split("\\s+"));
+                        result = executeMult("docker", "exec", "-t", stackName,"-meveo", "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/meveo/api/rest/module/initDefault");
                         LOG.debug("Result: "+ result);
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
@@ -134,7 +133,7 @@ public class AgentResource {
         return result;
     }
 
-    private String execute(String command, String[] params) {
+    private String executeMult(String command, String...params) {
         String result = null;
         service.setCommand(command);
         service.execute(params);
