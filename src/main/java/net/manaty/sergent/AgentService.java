@@ -75,7 +75,7 @@ public class AgentService {
 
     public void execute(String params) {
         ProcBuilder builder = new ProcBuilder(command);
-
+        clear();
         if (params != null && !params.isEmpty()) {
             this.error = null;
             try {
@@ -99,7 +99,7 @@ public class AgentService {
 
     public void execute(String[] params) {
         ProcBuilder builder = new ProcBuilder(command);
-
+        clear();
         if (params != null && params.length>0) {
             this.error = null;
             try {
@@ -149,4 +149,11 @@ public class AgentService {
         }
     }
 
+    private void clear() {
+        this.proc = null;
+        this.output = null;
+        this.error = null;
+        this.exitValue = 0;
+        this.executionTime = 0;
+    }
 }
