@@ -22,7 +22,8 @@ public class AgentResource {
             "dockerpull",
             "gitpull",
             "deploy-kc-theme",
-            "update-modules");
+            "update-modules",
+            "deploy");
 
     @Inject
     AgentService service;
@@ -55,6 +56,16 @@ public class AgentResource {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error deploying theme: " + params);
                     LOG.error("Failed to deploy theme: " + params, e);
+                }
+                break;
+            case "deploy":
+                try {
+                    LOG.debug("params: " + params);
+                    result = execute("./deploy.sh", params);
+                } catch (Exception e) {
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error executing deploy cmd: " + params);
+                    LOG.error("Failed to execute deploy cmd: " + params, e);
                 }
                 break;
             default:
