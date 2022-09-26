@@ -1,6 +1,6 @@
 # sergent project
 
-Sergent is a (Quarkus)[https://quarkus.io/] project that allow to remotely admnistrate our servers.
+Sergent is a [Quarkus](https://quarkus.io/) project that allow to remotely admnistrate our servers.
 
 sergent should be deployed on any server we want to administrate.
 
