@@ -28,6 +28,12 @@ public class AgentResource {
     @Inject
     AgentService service;
 
+    /**
+     * GET Request to Sergent Service
+     * Executes a specific script depending on command passed
+     * @param command Query Parameter => command to execute which executes a specific script
+     * @param params Query Parameter => Input of type Container/ File/ Realm/ fullUrl/ theme for deploy-kc-theme 
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String sergent(
@@ -75,6 +81,13 @@ public class AgentResource {
         return result;
     }
 
+    /**
+     * POST Request to Sergent Service
+     * @param command Command to execute 
+     * @param params String of parameters to pass with command
+     * @param timeoutSec Delay before timeout, default is 10 sec
+     * @return
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -120,6 +133,11 @@ public class AgentResource {
         return result;
     }
 
+    /**
+     * Execute command with no additional params
+     * @param command Command to execute
+     * @return
+     */
     private String execute(String command) {
         String result = null;
         service.setCommand(command);
@@ -132,6 +150,12 @@ public class AgentResource {
         return result;
     }
 
+    /**
+     * Execute command with params as options of command
+     * @param command Command to execute
+     * @param params Key-Value Options for specified command
+     * @return
+     */
     private String execute(String command, String params) {
         String result = null;
         service.setCommand(command);
@@ -144,6 +168,12 @@ public class AgentResource {
         return result;
     }
 
+    /**
+     * Execute command with multiple parameters
+     * @param command Command to execute
+     * @param params Additional Options to add to command
+     * @return
+     */
     private String executeMult(String command, String...params) {
         String result = null;
         service.setCommand(command);
