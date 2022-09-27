@@ -37,6 +37,10 @@ If you want to build an _über-jar_, execute the following command:
 ```shell script
 ./mvnw package -Dquarkus.package.type=uber-jar
 ```
+If you want to build and skip tests an _über-jar_, execute the following command:
+```shell script
+./mvnw package -Dquarkus.package.type=uber-jar -Dmaven.test.skip=true
+```
 
 The application is now runnable using `java -jar target/sergent-1.0-runner.jar`.
 
