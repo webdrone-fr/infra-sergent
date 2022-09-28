@@ -73,6 +73,10 @@ public class AgentService {
         this.executionTime = procResult.getExecutionTime();
     }
 
+    /**
+     *  Execute command with key-Value parameters
+     * @param params Key-Value Parameters
+     */
     public void execute(String params) {
         ProcBuilder builder = new ProcBuilder(command);
         clear();
@@ -93,10 +97,13 @@ public class AgentService {
                 return;
             }
         }
-
         doExecute(builder);
     }
 
+    /**
+     * Execute command with options
+     * @param params Command options
+     */
     public void execute(String[] params) {
         ProcBuilder builder = new ProcBuilder(command);
         clear();
