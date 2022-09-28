@@ -21,6 +21,9 @@ public class AgentResource {
             "list",
             "dockerpull",
             "gitpull",
+            "install",
+            "setup-docker",
+            "setup-git",
             "deploy-kc-theme",
             "update-modules",
             "deploy");
@@ -53,6 +56,9 @@ public class AgentResource {
                 break;
             case "gitpull":
                 result = execute("./gitpull.sh");
+                break;
+            case "install":
+                result = execute("./install.sh");
                 break;
             case "deploy-kc-theme":
                 try {
@@ -129,6 +135,29 @@ public class AgentResource {
                     LOG.error("Failed to execute gitpull for update-modules" + resultGitpull);
                 }
                 break;
+            case "setup-docker":
+                LOG.debug("params: " + params);
+                try {
+                    result = executeMult("./setup-docker.sh", params);
+                } catch (Exception e) {
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error executing setup-docker for setup docker" + params);
+                    LOG.error("Failed to execute setup-docker for setup docker: " + params, e);
+                }
+                break;
+            case "setup-git":
+                LOG.debug("params: " + params);
+                try {
+                    result = execute("./setup-git.sh", params);
+                } catch (Exception e) {
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error executing gitpull for update-modules" + params);
+                    LOG.error("Failed to execute gitpull for update-modules: " + params, e);
+                }
+                break;
+            default:
+                result = String.format("{\"commands\":[%s]}", String.join(",", COMMANDS.stream()
+                        .map(cmd -> String.format("\"%s\"", cmd)).toArray(String[]::new)));
         }
         return result;
     }

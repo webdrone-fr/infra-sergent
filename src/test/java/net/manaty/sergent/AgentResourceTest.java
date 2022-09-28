@@ -15,7 +15,7 @@ public class AgentResourceTest {
           .when().get("/sergent?command=list")
           .then()
              .statusCode(200)
-             .body(is("{\"commands\":[\"list\",\"dockerpull\",\"gitpull\",\"deploy-kc-theme\"]}"));
+             .body(is("{\"commands\":[\"list\",\"dockerpull\",\"gitpull\",\"install\",\"setup-docker\",\"setup-git\",\"deploy-kc-theme\",\"update-modules\",\"deploy\"]}"));
     }
 
 }
