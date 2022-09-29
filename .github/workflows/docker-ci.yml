@@ -89,7 +89,7 @@ jobs:
           file: ./src/main/docker/Dockerfile.native
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags:  webdronesas/sergent:${{needs.build-artifact.outputs.artifact_version}},webdronesas/sergent:latest
+          tags:  webdronesas/sergent:v1-beta
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
