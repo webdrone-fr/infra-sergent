@@ -148,6 +148,7 @@ public class AgentResource {
             case "setup-git":
                 // LOG.debug("params: " + params);
                 try {
+                    //TODO check is there are .sh script (setup-git.sh and deploy-github-key.sh in /tmp)
                     result = execute("./setup-git.sh", params);
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
