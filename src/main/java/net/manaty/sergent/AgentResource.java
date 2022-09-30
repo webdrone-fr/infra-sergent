@@ -62,22 +62,22 @@ public class AgentResource {
                 break;
             case "deploy-kc-theme":
                 try {
-                    LOG.debug("params: " + params);
+                    // LOG.debug("params: " + params);
                     result = execute("./deploy-kc-theme.sh", params);
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error deploying theme: " + params);
-                    LOG.error("Failed to deploy theme: " + params, e);
+                    // LOG.error("Failed to deploy theme: " + params, e);
                 }
                 break;
             case "deploy":
                 try {
-                    LOG.debug("params: " + params);
+                    // LOG.debug("params: " + params);
                     result = execute("./deploy.sh", params);
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing deploy cmd: " + params);
-                    LOG.error("Failed to execute deploy cmd: " + params, e);
+                    // LOG.error("Failed to execute deploy cmd: " + params, e);
                 }
                 break;
             default:
@@ -113,7 +113,7 @@ public class AgentResource {
                 LOG.debug("GitPull Result: "+resultGitpull);
                 if (resultGitpull.contains("output")){
                     try {
-                        LOG.debug("params: " + params);
+                        // LOG.debug("params: " + params);
                         String stackNameOutput = executeMult("./getenvvalue.sh","STACK_NAME");
                         String usernameOutput = executeMult("./getenvvalue.sh","MEVEO_ADMIN_USERNAME");
                         String passOutput = executeMult("./getenvvalue.sh","MEVEO_ADMIN_PASSWORD");
@@ -127,7 +127,7 @@ public class AgentResource {
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
                                 "Error updating modules: " + params);
-                        LOG.error("Failed to update modules: " + params, e);
+                        // LOG.error("Failed to update modules: " + params, e);
                     }
                 } else {
                     result = String.format("{\"error\":\"%s\"}",
@@ -136,23 +136,23 @@ public class AgentResource {
                 }
                 break;
             case "setup-docker":
-                LOG.debug("params: " + params);
+                // LOG.debug("params: " + params);
                 try {
                     result = executeMult("./setup-docker.sh", params);
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing setup-docker for setup docker" + params);
-                    LOG.error("Failed to execute setup-docker for setup docker: " + params, e);
+                    // LOG.error("Failed to execute setup-docker for setup docker: " + params, e);
                 }
                 break;
             case "setup-git":
-                LOG.debug("params: " + params);
+                // LOG.debug("params: " + params);
                 try {
                     result = execute("./setup-git.sh", params);
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing gitpull for update-modules" + params);
-                    LOG.error("Failed to execute gitpull for update-modules: " + params, e);
+                    // LOG.error("Failed to execute gitpull for update-modules: " + params, e);
                 }
                 break;
             default:

@@ -85,14 +85,14 @@ public class AgentService {
             try {
                 Map<String, String> parameterMap = new ObjectMapper()
                         .readValue(params, new TypeReference<Map<String, String>>() {});
-                LOG.debug("parameterMap: " + parameterMap);
+                // LOG.debug("parameterMap: " + parameterMap);
                 parameterMap.entrySet().stream()
                         .forEach(entry -> {
                             builder.withArg("--" + entry.getKey());
                             builder.withArg(entry.getValue());
                         });
             } catch (Exception e) {
-                LOG.error("Failed to parse parameters: " + params, e);
+                // LOG.error("Failed to parse parameters: " + params, e);
                 this.error = "Failed to parse parameters: " + params;
                 return;
             }
@@ -116,7 +116,7 @@ public class AgentService {
                             builder.withArg(entry);
                         });
             } catch (Exception e) {
-                LOG.error("Failed to parse parameters: " + params, e);
+                // LOG.error("Failed to parse parameters: " + params, e);
                 this.error = "Failed to parse parameters: " + params;
                 return;
             }
@@ -147,7 +147,7 @@ public class AgentService {
                 this.error = "timeout";
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
             if (procResult != null) {
                 setOutput(procResult);
             } else {
