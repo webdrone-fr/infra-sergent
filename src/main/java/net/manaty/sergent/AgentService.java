@@ -2,8 +2,11 @@ package net.manaty.sergent;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.io.FileWriter;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,7 +14,6 @@ import java.util.Arrays;
 import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
-import javax.xml.catalog.Catalog;
 
 import org.buildobjects.process.ProcBuilder;
 import org.buildobjects.process.ProcResult;
@@ -19,8 +21,6 @@ import org.buildobjects.process.TimeoutException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.netty.internal.tcnative.Buffer;
 
 import org.jboss.logging.Logger;
 
@@ -173,17 +173,18 @@ public class AgentService {
         this.executionTime = 0;
     }
 
-    private void readFile(String relativePath, String fileName) throws IOException {
+    private void readFile(String relativePath, String fileName) {
         String fileUrl = relativePath + fileName;
         try {
             InputStream instr = getClass().getClassLoader().getResourceAsStream(fileUrl); 
 
             // reading the files with buffered reader  
-            InputStreamReader strrd = new InputStreamReader(instr); 
+            InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
             BufferedReader rr = new BufferedReader(strrd); 
 
             // reate file in /tmp/ and quill
-            File shScriptFile = new File("/tmp/"+fileName);
+            String fileUrlServ = "/tmp/" + fileName;
+            File shScriptFile = new File(fileUrlServ);
             FileWriter quill = new FileWriter(shScriptFile);
 
             // read each line of the file
@@ -192,10 +193,12 @@ public class AgentService {
                 quill.write(line);
             }
             quill.close();
+            
+            // chmod no scripts
+            Path filePath = Paths.get(fileUrlServ);
+            Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxr--r--"));
         } catch (IOException ex) {
-            //TODO
+            // TODO
         }
-
-        // chmod +x script
     }
 }
