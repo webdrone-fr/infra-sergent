@@ -173,7 +173,7 @@ public class AgentService {
         this.executionTime = 0;
     }
 
-    private void readFile(String relativePath, String fileName) {
+    public void readExecDeleteFile(String relativePath, String fileName, String meveoParam) {
         String fileUrl = relativePath + fileName;
         try {
             InputStream instr = getClass().getClassLoader().getResourceAsStream(fileUrl); 
@@ -194,9 +194,17 @@ public class AgentService {
             }
             quill.close();
             
-            // chmod no scripts
+            // Do chmod on script
             Path filePath = Paths.get(fileUrlServ);
             Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxr--r--"));
+
+            // Execution
+            setCommand("./" + fileUrlServ);
+            execute(meveoParam); // Read params from meveo ?
+
+            // Deletion of scripts
+            shScriptFile.delete();
+
         } catch (IOException ex) {
             // TODO
         }
