@@ -1,6 +1,15 @@
 package net.manaty.sergent;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -85,14 +94,14 @@ public class AgentService {
             try {
                 Map<String, String> parameterMap = new ObjectMapper()
                         .readValue(params, new TypeReference<Map<String, String>>() {});
-                LOG.debug("parameterMap: " + parameterMap);
+                // LOG.debug("parameterMap: " + parameterMap);
                 parameterMap.entrySet().stream()
                         .forEach(entry -> {
                             builder.withArg("--" + entry.getKey());
                             builder.withArg(entry.getValue());
                         });
             } catch (Exception e) {
-                LOG.error("Failed to parse parameters: " + params, e);
+                // LOG.error("Failed to parse parameters: " + params, e);
                 this.error = "Failed to parse parameters: " + params;
                 return;
             }
@@ -116,7 +125,7 @@ public class AgentService {
                             builder.withArg(entry);
                         });
             } catch (Exception e) {
-                LOG.error("Failed to parse parameters: " + params, e);
+                // LOG.error("Failed to parse parameters: " + params, e);
                 this.error = "Failed to parse parameters: " + params;
                 return;
             }
@@ -147,7 +156,7 @@ public class AgentService {
                 this.error = "timeout";
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
             if (procResult != null) {
                 setOutput(procResult);
             } else {
@@ -162,5 +171,51 @@ public class AgentService {
         this.error = null;
         this.exitValue = 0;
         this.executionTime = 0;
+    }
+
+    public void readExecDeleteFile(String meveoParam, String relativePath, String... fileName) {
+        for (String file : fileName) {
+            String fileUrl = relativePath + file;
+            try {
+                InputStream instr = getClass().getClassLoader().getResourceAsStream(fileUrl); 
+    
+                // reading the files with buffered reader  
+                InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
+                BufferedReader rr = new BufferedReader(strrd); 
+    
+                // reate file in /tmp/ and quill
+                String fileUrlServ = "/tmp/" + file;
+                File shScriptFile = new File(fileUrlServ);
+                FileWriter quill = new FileWriter(shScriptFile);
+    
+                // read each line of the file
+                String line;
+                while ((line = rr.readLine()) != null) {
+                    quill.write(line);
+                }
+                quill.close();
+                
+                // Do chmod on script
+                Path filePath = Paths.get(fileUrlServ);
+                Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxr--r--"));
+
+                // Execute file
+                switch (file) {
+                    case "setup-git.sh":
+                        setCommand("./" + fileUrlServ);
+                        execute(meveoParam); // Read params from meveo ?
+                        break;
+                }
+                
+            } catch (IOException ex) {
+                // TODO
+            }
+        }
+
+        for (String fileDelete : fileName) {
+            String fileUrlServ = "/tmp/" + fileDelete;
+            File shScriptFile = new File(fileUrlServ);
+            shScriptFile.delete();
+        }
     }
 }
