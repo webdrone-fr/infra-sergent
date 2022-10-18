@@ -111,7 +111,7 @@ jobs:
         run: |
           if [ "${INPUT_TAG}" != "" ]; then 
             echo "::set-output name=tag::${INPUT_TAG}"
-          elif [ "${GIT_BRANCH}" == "main" ]; then
+          elif [ "${GIT_BRANCH}" == "master" ]; then
             echo "::set-output name=tag::dev-latest"
           else
             echo "::set-output name=tag::${GIT_BRANCH}-latest"
