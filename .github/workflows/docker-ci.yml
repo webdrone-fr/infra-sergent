@@ -78,7 +78,22 @@ jobs:
     needs: build-artifact
 
     steps:
+      # Get current branch name
+      - name: Extract branch name
+        env:
+          INPUT_BRANCH: ${{ github.event.inputs.branch }}
+        id: extract_branch
+        shell: bash
+        run: |
+          if [ "${GITHUB_REF_NAME}" == "" ]; then 
+            echo "::set-output name=branch::${INPUT_BRANCH}"
+          else
+            echo "::set-output name=branch::${GITHUB_REF_NAME}"
+          fi
+          
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.extract_branch.outputs.branch }}
 
       - name: Get the artifact file
         uses: actions/download-artifact@v1
