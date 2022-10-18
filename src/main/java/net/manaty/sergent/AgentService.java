@@ -208,7 +208,8 @@ public class AgentService {
                 }
                 
             } catch (IOException ex) {
-                // TODO
+                LOG.error("Failed to interact with IOFile");
+                ex.printStackTrace();
             }
         }
 
