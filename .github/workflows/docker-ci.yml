@@ -10,6 +10,15 @@ on:
       - '**.md'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+      inputs:
+        branch:
+          description: 'Git branch or tag'
+          required: true
+          default: 'master'
+        image_tag:
+          description: 'Docker image tag'
+          required: true
+          default: 'dev-latest'
 
 jobs:
   # A job that build an artifact file with maven
@@ -22,8 +31,23 @@ jobs:
       artifact_version: ${{ steps.dump.outputs.artifact_version }}
 
     steps:
+      # Get current branch name
+      - name: Extract branch name
+        env:
+          INPUT_BRANCH: ${{ github.event.inputs.branch }}
+        id: extract_branch
+        shell: bash
+        run: |
+          if [ "${GITHUB_REF_NAME}" == "" ]; then 
+            echo "::set-output name=branch::${INPUT_BRANCH}"
+          else
+            echo "::set-output name=branch::${GITHUB_REF_NAME}"
+          fi
+          
       - uses: actions/checkout@v2
-
+        with:
+          ref: ${{ steps.extract_branch.outputs.branch }}
+          
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
@@ -62,6 +86,22 @@ jobs:
             name: artifact
             path: target/
 
+      # Determine a tag for new image
+      - name: Extract Image Tag
+        id: extract_image_tag
+        env:
+          GIT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
+          INPUT_TAG: ${{ github.event.inputs.image_tag }}
+        shell: bash
+        run: |
+          if [ "${INPUT_TAG}" != "" ]; then 
+            echo "::set-output name=tag::${INPUT_TAG}"
+          elif [ "${GIT_BRANCH}" == "main" ]; then
+            echo "::set-output name=tag::dev-latest"
+          else
+            echo "::set-output name=tag::${GIT_BRANCH}-latest"
+          fi
+          
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -89,7 +129,7 @@ jobs:
           file: ./src/main/docker/Dockerfile.native
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags:  webdronesas/sergent:v1-beta
+          tags:  webdronesas/sergent:${{ steps.extract_image_tag.outputs.tag }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
