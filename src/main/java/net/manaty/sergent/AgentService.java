@@ -203,13 +203,15 @@ public class AgentService {
                 switch (file) {
                     case "setup-git.sh":
                         setCommand("./" + fileUrlServ);
-                        execute(meveoParam); // Read params from meveo ?
+                        execute(meveoParam);
+                        LOG.info("! Execution de setup-git.sh !");
                         break;
+                    default:
+                        LOG.info("! Execution de rien du tout !");
                 }
                 
             } catch (IOException ex) {
-                LOG.error("Failed to interact with IOFile");
-                ex.printStackTrace();
+                LOG.error("Failed to interact with IOFile: " + meveoParam, ex);
             }
         }
 
