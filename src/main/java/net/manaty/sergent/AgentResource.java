@@ -152,7 +152,7 @@ public class AgentResource {
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing setup-git with params" + params);
-                    // LOG.error("Failed to execute gitpull for update-modules: " + params, e);
+                    LOG.error("Failed to execute setup-git with params: " + params, e);
                 }
                 break;
             default:
