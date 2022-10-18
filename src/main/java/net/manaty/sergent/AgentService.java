@@ -173,40 +173,49 @@ public class AgentService {
         this.executionTime = 0;
     }
 
-    public void readExecDeleteFile(String relativePath, String fileName, String meveoParam) {
-        String fileUrl = relativePath + fileName;
-        try {
-            InputStream instr = getClass().getClassLoader().getResourceAsStream(fileUrl); 
+    public void readExecDeleteFile(String meveoParam, String relativePath, String... fileName) {
+        for (String file : fileName) {
+            String fileUrl = relativePath + file;
+            try {
+                InputStream instr = getClass().getClassLoader().getResourceAsStream(fileUrl); 
+    
+                // reading the files with buffered reader  
+                InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
+                BufferedReader rr = new BufferedReader(strrd); 
+    
+                // reate file in /tmp/ and quill
+                String fileUrlServ = "/tmp/" + file;
+                File shScriptFile = new File(fileUrlServ);
+                FileWriter quill = new FileWriter(shScriptFile);
+    
+                // read each line of the file
+                String line;
+                while ((line = rr.readLine()) != null) {
+                    quill.write(line);
+                }
+                quill.close();
+                
+                // Do chmod on script
+                Path filePath = Paths.get(fileUrlServ);
+                Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxr--r--"));
 
-            // reading the files with buffered reader  
-            InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
-            BufferedReader rr = new BufferedReader(strrd); 
-
-            // reate file in /tmp/ and quill
-            String fileUrlServ = "/tmp/" + fileName;
-            File shScriptFile = new File(fileUrlServ);
-            FileWriter quill = new FileWriter(shScriptFile);
-
-            // read each line of the file
-            String line;
-            while ((line = rr.readLine()) != null) {
-                quill.write(line);
+                // Execute file
+                switch (file) {
+                    case "setup-git.sh":
+                        setCommand("./" + fileUrlServ);
+                        execute(meveoParam); // Read params from meveo ?
+                        break;
+                }
+                
+            } catch (IOException ex) {
+                // TODO
             }
-            quill.close();
-            
-            // Do chmod on script
-            Path filePath = Paths.get(fileUrlServ);
-            Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxr--r--"));
+        }
 
-            // Execution
-            setCommand("./" + fileUrlServ);
-            execute(meveoParam); // Read params from meveo ?
-
-            // Deletion of scripts
+        for (String fileDelete : fileName) {
+            String fileUrlServ = "/tmp/" + fileDelete;
+            File shScriptFile = new File(fileUrlServ);
             shScriptFile.delete();
-
-        } catch (IOException ex) {
-            // TODO
         }
     }
 }

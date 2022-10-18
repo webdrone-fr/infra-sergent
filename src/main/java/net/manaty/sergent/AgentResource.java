@@ -149,8 +149,8 @@ public class AgentResource {
                 // LOG.debug("params: " + params);
                 try {
                     //TODO check is there are .sh script (setup-git.sh and deploy-github-key.sh in /tmp)
-                    result = execute("./setup-git.sh", params);
-                    // result = service.readExecDeleteFile(relativePath, fileName, params);
+                    // result = execute("./setup-git.sh", params);
+                    service.readExecDeleteFile("./ressources/", params, "deploy-github-key.sh", "setup-git.sh");
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing gitpull for update-modules" + params);
