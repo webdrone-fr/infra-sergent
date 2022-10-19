@@ -302,5 +302,11 @@ public class AgentService {
                 LOG.error(e);
             }
         }
+
+        if (instr != null) {
+            LOG.info("InputStream is NOT null => " + instr.toString());
+        } else {
+            LOG.info("InputStream IS null");
+        }
     }
 }
