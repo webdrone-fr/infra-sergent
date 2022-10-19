@@ -148,7 +148,7 @@ public class AgentResource {
             case "setup-git":
                 // LOG.debug("params: " + params);
                 try {
-                    service.readExecDeleteFile(params, "", "deploy-github-key.sh", "setup-git.sh");
+                    service.readExecDeleteFile(params, "/", "deploy-github-key.sh", "setup-git.sh");
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing setup-git with params" + params);
