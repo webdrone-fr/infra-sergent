@@ -221,4 +221,86 @@ public class AgentService {
             shScriptFile.delete();
         }
     }
+
+    public void testInputStreamNull(String file) {
+        InputStream instr = null;
+        try {
+            LOG.info("Avec prefix '/' + file");
+            instr = getClass().getClassLoader().getResourceAsStream("/" + file);
+        } catch (Exception e) {
+            LOG.error(e);
+        }
+
+        if (instr == null) {
+            try {
+                LOG.info("Avec prefix './../../../' + file");
+                instr = getClass().getClassLoader().getResourceAsStream("./../../../" + file);
+            } catch (Exception e) {
+                LOG.error(e);
+            }
+        }
+
+        if (instr == null) {
+            try {
+                LOG.info("Avec prefix '' + file");
+                instr = getClass().getClassLoader().getResourceAsStream("" + file);
+            } catch (Exception e) {
+                LOG.error(e);
+            }
+        }
+
+        if (instr == null) {
+            try {
+                LOG.info("Avec getParent() and '/'");
+                instr = getClass().getClassLoader().getParent().getResourceAsStream("/" + file);
+            } catch (Exception e) {
+                LOG.error(e);
+            }
+        }
+
+        if (instr == null) {
+            try {
+                LOG.info("Avec getParent() and './../../../'");
+                instr = getClass().getClassLoader().getParent().getResourceAsStream("./../../../" + file);
+            } catch (Exception e) {
+                LOG.error(e);
+            }
+        }
+
+        if (instr == null) {
+            try {
+                LOG.info("Avec getParent() and no prefix");
+                instr = getClass().getClassLoader().getParent().getResourceAsStream("" + file);
+            } catch (Exception e) {
+                LOG.error(e);
+            }
+        }
+
+        if (instr == null) {
+            try {
+                LOG.info("Avec CurrentThread and '/'");
+                instr = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + file);
+            } catch (Exception e) {
+                LOG.error(e);
+            }
+        }
+
+        if (instr == null) {
+            try {
+                LOG.info("Avec CurrentThread and './../../../'");
+                instr = Thread.currentThread().getContextClassLoader().getResourceAsStream("./../../../" + file);
+            } catch (Exception e) {
+                LOG.error(e);
+            }
+        }
+
+        if (instr == null) {
+            try {
+                LOG.info("Avec CurrentThread and no prefix");
+                instr = Thread.currentThread().getContextClassLoader().getResourceAsStream("" + file);
+            } catch (Exception e) {
+                LOG.error(e);
+            }
+        }
+    }
 }
