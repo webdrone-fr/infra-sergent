@@ -41,9 +41,11 @@ jobs:
         shell: bash
         run: |
           if [ "${GITHUB_REF_NAME}" == "" ]; then 
-            echo "::set-output name=branch::${INPUT_BRANCH}"
+            #echo "::set-output name=branch::${INPUT_BRANCH}"
+            echo "branch=${INPUT_BRANCH}" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=branch::${GITHUB_REF_NAME}"
+            #echo "::set-output name=branch::${GITHUB_REF_NAME}"
+            echo "branch=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
           fi
       
       # Determine a tag for new image
@@ -55,11 +57,14 @@ jobs:
         shell: bash
         run: |
           if [ "${INPUT_TAG}" != "" ]; then 
-            echo "::set-output name=tag::${INPUT_TAG}"
+            #echo "::set-output name=tag::${INPUT_TAG}"
+            echo "tag=${INPUT_TAG}" >> $GITHUB_OUTPUT
           elif [ "${GIT_BRANCH}" == "master" ]; then
-            echo "::set-output name=tag::dev-latest"
+            #echo "::set-output name=tag::dev-latest"
+            echo "tag=dev-latest" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=tag::${GIT_BRANCH}-latest"
+            #echo "::set-output name=tag::${GIT_BRANCH}-latest"
+            echo "tag=${GIT_BRANCH}-latest" >> $GITHUB_OUTPUT
           fi
           
       - uses: actions/checkout@v2
@@ -79,7 +84,8 @@ jobs:
         id: dump
         run: |
           JAR_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo ::set-output name=artifact_version::${JAR_VERSION}
+          #echo ::set-output name=artifact_version::${JAR_VERSION}
+          echo "artifact_version=${JAR_VERSION}-latest" >> $GITHUB_OUTPUT
       - name: Build with Maven
         run: ./mvnw package -Pnative -DskipTests
 
