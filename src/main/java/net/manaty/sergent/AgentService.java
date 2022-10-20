@@ -29,6 +29,7 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.FieldInfoList;
 import io.github.classgraph.Resource;
 import io.github.classgraph.ScanResult;
+import io.quarkus.logging.Log;
 
 import org.jboss.logging.Logger;
 
@@ -292,6 +293,7 @@ public class AgentService {
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             processBuilder.directory(new File(path));
             Process process = processBuilder.start();
+            Log.info("Process exit value => " + process.exitValue());
             process.destroy();
             String filePath = path + fileName;
             Path pathPermission = Paths.get(filePath);
