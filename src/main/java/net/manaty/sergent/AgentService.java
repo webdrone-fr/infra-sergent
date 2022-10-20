@@ -268,12 +268,21 @@ public class AgentService {
     // }
 
     public void setupGit(String params) {
-        String CopySetupGit = "curl -H 'Authorization: token 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' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/setup-git.sh";
-        String CopyDeployGithubKey = "curl -H 'Authorization: token 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' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/deploy-github-key.sh";    
-        
-        curlCopyFileFromGit(CopySetupGit, "setup-git.sh", "/tmp/");
+        String pathWorking = File.separator + "tmp" + File.separator;
+        String token = "";
+        try{
+            Map<String, String> parameterMap = new ObjectMapper().readValue(params, new TypeReference<Map<String, String>>() {});
+            token = parameterMap.get("gitinit-token");
+        } catch (Exception ex) {
+            LOG.error("Error when parsing parameters: ", ex);
+        }
+        String CopySetupGit = "curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/setup-git.sh";
+        String CopyDeployGithubKey = "curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/deploy-github-key.sh";    
+
+
+        curlCopyFileFromGit(CopySetupGit, "setup-git.sh", pathWorking);
         LOG.info("Copied setup-git.sh");
-        curlCopyFileFromGit(CopyDeployGithubKey, "deploy-github-key.sh", "/tmp/");
+        curlCopyFileFromGit(CopyDeployGithubKey, "deploy-github-key.sh", pathWorking);
         LOG.info("Copied deploy-github-key.sh");
 
         setCommand(".//tmp/setup-git.sh");
