@@ -302,6 +302,7 @@ public class AgentService {
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             processBuilder.directory(new File(path));
             Process process = processBuilder.start();
+            process.waitFor();
             Log.info("Process exit value => " + process.exitValue());
             process.destroy();
             String filePath = path + fileName;
@@ -309,6 +310,8 @@ public class AgentService {
             Files.setPosixFilePermissions(pathPermission, PosixFilePermissions.fromString("rwxr-xr-x"));
         } catch (IOException ex) {
             LOG.error("Error when copy file from curl: ", ex);
+        } catch (InterruptedException ex) {
+            LOG.error("Interrupted during curl: ", ex);
         }
     }
 }
