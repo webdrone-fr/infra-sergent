@@ -307,6 +307,7 @@ public class AgentService {
             process.destroy();
             String filePath = path + fileName;
             Path pathPermission = Paths.get(filePath);
+            pathPermission.toFile().setExecutable(true);
             Files.setPosixFilePermissions(pathPermission, PosixFilePermissions.fromString("rwxr-xr-x"));
         } catch (IOException ex) {
             LOG.error("Error when copy file from curl: ", ex);
