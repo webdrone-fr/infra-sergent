@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.classgraph.ClassGraph;
+import io.github.classgraph.FieldInfoList;
 import io.github.classgraph.Resource;
 import io.github.classgraph.ScanResult;
 
@@ -180,177 +181,123 @@ public class AgentService {
         this.executionTime = 0;
     }
 
-    public void saveFileToTmp(String fileName, String content) {
-        LOG.info("fileName => " + fileName);
-        LOG.info("content => " + content);
-        try {
-        // reading the files with buffered reader
-        InputStream instr = new ByteArrayInputStream(content.getBytes());
-        InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
-        BufferedReader rr = new BufferedReader(strrd); 
+    // public void saveFileToTmp(String fileName, String content) {
+    //     LOG.info("fileName => " + fileName);
+    //     LOG.info("content => " + content);
+    //     try {
+    //     // reading the files with buffered reader
+    //     InputStream instr = new ByteArrayInputStream(content.getBytes());
+    //     InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
+    //     BufferedReader rr = new BufferedReader(strrd); 
 
-        // reate file in /tmp/ and quill
-        String fileUrlServ = "/tmp/" + fileName;
-        File shScriptFile = new File(fileUrlServ);
-        FileWriter quill = new FileWriter(shScriptFile);
+    //     // reate file in /tmp/ and quill
+    //     String fileUrlServ = "/tmp/" + fileName;
+    //     File shScriptFile = new File(fileUrlServ);
+    //     FileWriter quill = new FileWriter(shScriptFile);
 
-        // read each line of the file
-        String line;
-        while ((line = rr.readLine()) != null) {
-            quill.write(line);
-        }
-        quill.close();
-        } catch (UnsupportedEncodingException ex) {
-            LOG.error(ex);
-        } catch (IOException ex) {
-            LOG.error(ex);
-        }
+    //     // read each line of the file
+    //     String line;
+    //     while ((line = rr.readLine()) != null) {
+    //         quill.write(line);
+    //     }
+    //     quill.close();
+    //     } catch (UnsupportedEncodingException ex) {
+    //         LOG.error(ex);
+    //     } catch (IOException ex) {
+    //         LOG.error(ex);
+    //     }
+    // }
+
+    // public void readExecDeleteFile(String meveoParam, String relativePath, String... fileName) {
+    //     try (ScanResult scanResult = new ClassGraph().acceptPathsNonRecursive("").scan()) {
+    //         scanResult.getResourcesWithExtension("sh")
+    //             .forEachByteArrayThrowingIOException((Resource res, byte[] content) -> {
+    //                 saveFileToTmp(res.getPath(), new String(content, StandardCharsets.UTF_8));
+    //             });
+    //     } catch(IOException ex) {
+    //         LOG.error(ex);
+    //     }
+
+    //     for (String file : fileName) {
+    //         String fileUrl = relativePath + file;
+    //         try {
+    //             InputStream instr = getClass().getClassLoader().getResourceAsStream(fileUrl); 
+    
+    //             // reading the files with buffered reader  
+    //             InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
+    //             BufferedReader rr = new BufferedReader(strrd); 
+    
+    //             // reate file in /tmp/ and quill
+    //             String fileUrlServ = "/tmp/" + file;
+    //             File shScriptFile = new File(fileUrlServ);
+    //             FileWriter quill = new FileWriter(shScriptFile);
+    
+    //             // read each line of the file
+    //             String line;
+    //             while ((line = rr.readLine()) != null) {
+    //                 quill.write(line);
+    //             }
+    //             quill.close();
+                
+    //             // Do chmod on script
+    //             Path filePath = Paths.get(fileUrlServ);
+    //             Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxr--r--"));
+
+    //             // Execute file
+    //             switch (file) {
+    //                 case "setup-git.sh":
+    //                     setCommand("./" + fileUrlServ);
+    //                     execute(meveoParam);
+    //                     LOG.info("! Execution de setup-git.sh !");
+    //                     break;
+    //                 default:
+    //                     LOG.info("! Execution de rien du tout !");
+    //             }
+                
+    //         } catch (IOException ex) {
+    //             LOG.error("Failed to interact with IOFile: " + meveoParam, ex);
+    //         }
+    //     }
+
+    //     for (String fileDelete : fileName) {
+    //         String fileUrlServ = "/tmp/" + fileDelete;
+    //         File shScriptFile = new File(fileUrlServ);
+    //         shScriptFile.delete();
+    //     }
+    // }
+
+    public void setupGit(String params) {
+        String CopySetupGit = "curl -H 'Authorization: token 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' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/setup-git.sh";
+        String CopyDeployGithubKey = "curl -H 'Authorization: token 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' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/deploy-github-key.sh";    
         
+        curlCopyFileFromGit(CopySetupGit, "setup-git.sh", "/tmp/");
+        LOG.info("Copied setup-git.sh");
+        curlCopyFileFromGit(CopyDeployGithubKey, "deploy-github-key.sh", "/tmp/");
+        LOG.info("Copied deploy-github-key.sh");
+
+        setCommand(".//tmp/setup-git.sh");
+        execute(params);
+        LOG.info("Executed setup-git.sh with params");
+
+        File setupGit = new File("/tmp/setup-git.sh");
+        File deployGithubKey = new File("/tmp/deploy-github-key.sh");
+
+        setupGit.delete();
+        deployGithubKey.delete();
+        LOG.info("Removed setup-git and deploy-github-key");
     }
 
-    public void readExecDeleteFile(String meveoParam, String relativePath, String... fileName) {
-        try (ScanResult scanResult = new ClassGraph().acceptPathsNonRecursive("").scan()) {
-            scanResult.getResourcesWithExtension("sh")
-                .forEachByteArrayThrowingIOException((Resource res, byte[] content) -> {
-                    saveFileToTmp(res.getPath(), new String(content, StandardCharsets.UTF_8));
-                });
-        } catch(IOException ex) {
-            LOG.error(ex);
-        }
-
-        // for (String file : fileName) {
-        //     String fileUrl = relativePath + file;
-        //     try {
-        //         InputStream instr = getClass().getClassLoader().getResourceAsStream(fileUrl); 
-    
-        //         // reading the files with buffered reader  
-        //         InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
-        //         BufferedReader rr = new BufferedReader(strrd); 
-    
-        //         // reate file in /tmp/ and quill
-        //         String fileUrlServ = "/tmp/" + file;
-        //         File shScriptFile = new File(fileUrlServ);
-        //         FileWriter quill = new FileWriter(shScriptFile);
-    
-        //         // read each line of the file
-        //         String line;
-        //         while ((line = rr.readLine()) != null) {
-        //             quill.write(line);
-        //         }
-        //         quill.close();
-                
-        //         // Do chmod on script
-        //         Path filePath = Paths.get(fileUrlServ);
-        //         Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxr--r--"));
-
-        //         // Execute file
-        //         switch (file) {
-        //             case "setup-git.sh":
-        //                 setCommand("./" + fileUrlServ);
-        //                 execute(meveoParam);
-        //                 LOG.info("! Execution de setup-git.sh !");
-        //                 break;
-        //             default:
-        //                 LOG.info("! Execution de rien du tout !");
-        //         }
-                
-        //     } catch (IOException ex) {
-        //         LOG.error("Failed to interact with IOFile: " + meveoParam, ex);
-        //     }
-        // }
-
-        // for (String fileDelete : fileName) {
-        //     String fileUrlServ = "/tmp/" + fileDelete;
-        //     File shScriptFile = new File(fileUrlServ);
-        //     shScriptFile.delete();
-        // }
-    }
-
-    public void testInputStreamNull(String file) {
-        InputStream instr = null;
+    private void curlCopyFileFromGit(String command, String fileName, String path) {
         try {
-            LOG.info("Avec prefix '/' + file");
-            instr = getClass().getClassLoader().getResourceAsStream("/" + file);
-        } catch (Exception e) {
-            LOG.error(e);
-        }
-
-        if (instr == null) {
-            try {
-                LOG.info("Avec prefix './../../../' + file");
-                instr = getClass().getClassLoader().getResourceAsStream("./../../../" + file);
-            } catch (Exception e) {
-                LOG.error(e);
-            }
-        }
-
-        if (instr == null) {
-            try {
-                LOG.info("Avec prefix '' + file");
-                instr = getClass().getClassLoader().getResourceAsStream("" + file);
-            } catch (Exception e) {
-                LOG.error(e);
-            }
-        }
-
-        if (instr == null) {
-            try {
-                LOG.info("Avec getParent() and '/'");
-                instr = getClass().getClassLoader().getParent().getResourceAsStream("/" + file);
-            } catch (Exception e) {
-                LOG.error(e);
-            }
-        }
-
-        if (instr == null) {
-            try {
-                LOG.info("Avec getParent() and './../../../'");
-                instr = getClass().getClassLoader().getParent().getResourceAsStream("./../../../" + file);
-            } catch (Exception e) {
-                LOG.error(e);
-            }
-        }
-
-        if (instr == null) {
-            try {
-                LOG.info("Avec getParent() and no prefix");
-                instr = getClass().getClassLoader().getParent().getResourceAsStream("" + file);
-            } catch (Exception e) {
-                LOG.error(e);
-            }
-        }
-
-        if (instr == null) {
-            try {
-                LOG.info("Avec CurrentThread and '/'");
-                instr = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + file);
-            } catch (Exception e) {
-                LOG.error(e);
-            }
-        }
-
-        if (instr == null) {
-            try {
-                LOG.info("Avec CurrentThread and './../../../'");
-                instr = Thread.currentThread().getContextClassLoader().getResourceAsStream("./../../../" + file);
-            } catch (Exception e) {
-                LOG.error(e);
-            }
-        }
-
-        if (instr == null) {
-            try {
-                LOG.info("Avec CurrentThread and no prefix");
-                instr = Thread.currentThread().getContextClassLoader().getResourceAsStream("" + file);
-            } catch (Exception e) {
-                LOG.error(e);
-            }
-        }
-
-        if (instr != null) {
-            LOG.info("InputStream is NOT null => " + instr.toString());
-        } else {
-            LOG.info("InputStream IS null");
+            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            processBuilder.directory(new File(path));
+            Process process = processBuilder.start();
+            process.destroy();
+            String filePath = path + fileName;
+            Path pathPermission = Paths.get(filePath);
+            Files.setPosixFilePermissions(pathPermission, PosixFilePermissions.fromString("rwxr-xr-x"));
+        } catch (IOException ex) {
+            LOG.error("Error when copy file from curl: ", ex);
         }
     }
 }

@@ -142,14 +142,12 @@ public class AgentResource {
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing setup-docker for setup docker" + params);
-                    // LOG.error("Failed to execute setup-docker for setup docker: " + params, e);
+                    LOG.error("Failed to execute setup-docker for setup docker: " + params, e);
                 }
                 break;
             case "setup-git":
-                // LOG.debug("params: " + params);
                 try {
-                    // service.readExecDeleteFile(params, "/", "deploy-github-key.sh", "setup-git.sh");
-                    service.readExecDeleteFile(params, commandPath, "deploy-github-key.sh", "setup-git.sh");
+                    service.setupGit(params);
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing setup-git with params" + params);
