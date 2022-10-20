@@ -85,7 +85,7 @@ jobs:
         run: |
           JAR_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           #echo ::set-output name=artifact_version::${JAR_VERSION}
-          echo "artifact_version=${JAR_VERSION}-latest" >> $GITHUB_OUTPUT
+          echo "artifact_version=${JAR_VERSION}" >> $GITHUB_OUTPUT
       - name: Build with Maven
         run: ./mvnw package -Pnative -DskipTests
 
