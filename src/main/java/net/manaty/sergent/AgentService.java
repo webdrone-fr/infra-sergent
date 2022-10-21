@@ -1,6 +1,7 @@
 package net.manaty.sergent;
 
 import java.io.File;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
@@ -269,8 +270,8 @@ public class AgentService {
                 LOG.error("Error when parsing parameters (gitinit-token): ", ex);
             }
             String installCurl = "sudo apt install curl -y";
-            String CopySetupGit = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/setup-git.sh";
-            String CopyDeployGithubKey = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/deploy-github-key.sh";        
+            String CopySetupGit = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh";
+            String CopyDeployGithubKey = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh";        
 
             curlCopyFileFromGit(CopySetupGit, "setup-git.sh", pathWorking);
             LOG.info("Copied setup-git.sh");
@@ -315,7 +316,7 @@ public class AgentService {
 
     private void chmod(String path, String fileName) {
         try {
-            LOG.info(fileName + " with path: " + path);
+            LOG.info("File path for chmod => " + path + fileName);
             String command = "sudo -i && chmod +x " + path + fileName + " && su debian";
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             Process process = processBuilder.start();
