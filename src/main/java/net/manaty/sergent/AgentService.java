@@ -275,9 +275,9 @@ public class AgentService {
             } catch (Exception ex) {
                 LOG.error("Error when parsing parameters (gitinit-token): ", ex);
             }
-            String installCurl = "sudo apt install curl -y";
-            String CopySetupGit = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh";
-            String CopyDeployGithubKey = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh";        
+            // String installCurl = "sudo apt install curl -y";
+            String CopySetupGit ="curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh";
+            String CopyDeployGithubKey ="curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh";        
 
             curlCopyFileFromGit(CopySetupGit, "setup-git.sh", pathWorking);
             LOG.info("Copied setup-git.sh");
@@ -332,8 +332,8 @@ public class AgentService {
 
     private void chmod(String path, String fileName) {
         try {
-            LOG.info("File path for chmod CHANGED ? => " + path + fileName);
-            String command = "sudo -i && chmod +x " + path + fileName + " && su debian";
+            LOG.info("File path for chmod => " + path + fileName);
+            String command = "chmod +x " + path + fileName;
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             Process process = processBuilder.start();
             process.waitFor();
