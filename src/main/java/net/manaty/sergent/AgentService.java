@@ -3,6 +3,7 @@ package net.manaty.sergent;
 import java.io.File;
 import java.io.FilePermission;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.logging.Log;
 
 import org.jboss.logging.Logger;
+import org.xml.sax.InputSource;
 
 @RequestScoped
 public class AgentService {
@@ -305,6 +307,15 @@ public class AgentService {
             Process process = processBuilder.start();
             process.waitFor();
             Log.info("Process exit value => " + process.exitValue());
+            // log error from process builder
+            if (process.exitValue() != 0) {
+                LOG.error("Command: " + command.split(" "));
+                InputStream errorStream = process.getErrorStream();
+                int i = 0;
+                while ((i = errorStream.read()) != -1) {
+                    LOG.error((char)i);
+                }
+            }
             process.destroy();
             chmod(path, fileName);
         } catch (IOException ex) {
@@ -316,12 +327,21 @@ public class AgentService {
 
     private void chmod(String path, String fileName) {
         try {
-            LOG.info("File path for chmod => " + path + fileName);
+            LOG.info("File path for chmod CHANGED ? => " + path + fileName);
             String command = "sudo -i && chmod +x " + path + fileName + " && su debian";
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             Process process = processBuilder.start();
             process.waitFor();
             Log.info("Process exit value => " + process.exitValue());
+            // log error from process builder
+            if (process.exitValue() != 0) {
+                LOG.error("Command: " + command.split(" "));
+                InputStream errorStream = process.getErrorStream();
+                int i = 0;
+                while ((i = errorStream.read()) != -1) {
+                    LOG.error((char)i);
+                }
+            }
             process.destroy();
         } catch (IOException ex) {
             LOG.error("Error when chmod file: ", ex);
