@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -173,91 +174,6 @@ public class AgentService {
         this.executionTime = 0;
     }
 
-    // public void saveFileToTmp(String fileName, String content) {
-    //     LOG.info("fileName => " + fileName);
-    //     LOG.info("content => " + content);
-    //     try {
-    //     // reading the files with buffered reader
-    //     InputStream instr = new ByteArrayInputStream(content.getBytes());
-    //     InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
-    //     BufferedReader rr = new BufferedReader(strrd); 
-
-    //     // reate file in /tmp/ and quill
-    //     String fileUrlServ = "/tmp/" + fileName;
-    //     File shScriptFile = new File(fileUrlServ);
-    //     FileWriter quill = new FileWriter(shScriptFile);
-
-    //     // read each line of the file
-    //     String line;
-    //     while ((line = rr.readLine()) != null) {
-    //         quill.write(line);
-    //     }
-    //     quill.close();
-    //     } catch (UnsupportedEncodingException ex) {
-    //         LOG.error(ex);
-    //     } catch (IOException ex) {
-    //         LOG.error(ex);
-    //     }
-    // }
-
-    // public void readExecDeleteFile(String meveoParam, String relativePath, String... fileName) {
-    //     try (ScanResult scanResult = new ClassGraph().acceptPathsNonRecursive("").scan()) {
-    //         scanResult.getResourcesWithExtension("sh")
-    //             .forEachByteArrayThrowingIOException((Resource res, byte[] content) -> {
-    //                 saveFileToTmp(res.getPath(), new String(content, StandardCharsets.UTF_8));
-    //             });
-    //     } catch(IOException ex) {
-    //         LOG.error(ex);
-    //     }
-
-    //     for (String file : fileName) {
-    //         String fileUrl = relativePath + file;
-    //         try {
-    //             InputStream instr = getClass().getClassLoader().getResourceAsStream(fileUrl); 
-    
-    //             // reading the files with buffered reader  
-    //             InputStreamReader strrd = new InputStreamReader(instr, "UTF-8"); 
-    //             BufferedReader rr = new BufferedReader(strrd); 
-    
-    //             // reate file in /tmp/ and quill
-    //             String fileUrlServ = "/tmp/" + file;
-    //             File shScriptFile = new File(fileUrlServ);
-    //             FileWriter quill = new FileWriter(shScriptFile);
-    
-    //             // read each line of the file
-    //             String line;
-    //             while ((line = rr.readLine()) != null) {
-    //                 quill.write(line);
-    //             }
-    //             quill.close();
-                
-    //             // Do chmod on script
-    //             Path filePath = Paths.get(fileUrlServ);
-    //             Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxr--r--"));
-
-    //             // Execute file
-    //             switch (file) {
-    //                 case "setup-git.sh":
-    //                     setCommand("./" + fileUrlServ);
-    //                     execute(meveoParam);
-    //                     LOG.info("! Execution de setup-git.sh !");
-    //                     break;
-    //                 default:
-    //                     LOG.info("! Execution de rien du tout !");
-    //             }
-                
-    //         } catch (IOException ex) {
-    //             LOG.error("Failed to interact with IOFile: " + meveoParam, ex);
-    //         }
-    //     }
-
-    //     for (String fileDelete : fileName) {
-    //         String fileUrlServ = "/tmp/" + fileDelete;
-    //         File shScriptFile = new File(fileUrlServ);
-    //         shScriptFile.delete();
-    //     }
-    // }
-
     public void setupGit(String params) {
         // Check if file doesn't exist in /opt/webdrone/common
         File checkOptWebdrone = new File("/opt/webdrone/common");
@@ -276,8 +192,14 @@ public class AgentService {
                 LOG.error("Error when parsing parameters (gitinit-token): ", ex);
             }
             // String installCurl = "sudo apt install curl -y";
-            String CopySetupGit ="curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh";
-            String CopyDeployGithubKey ="curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh";        
+            // String CopySetupGit ="curl --silent --show-error --fail --output-dir /tmp -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh";
+            // String CopyDeployGithubKey ="curl --silent --show-error --fail --output-dir /tmp -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh";        
+            List<String> CopySetupGit = Arrays.asList(
+                "curl", "--silent", "--show-error", "--fail", "--output-dir", "/tmp", "-H", "'Authorization: token " + token + "'", "-H", "'Accept: application/vnd.github.v3.raw'", "-O", "-L", "https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh"
+            );
+            List<String> CopyDeployGithubKey = Arrays.asList(
+                "curl", "--silent", "--show-error", "--fail", "--output-dir", "/tmp", "-H", "'Authorization: token " + token + "'", "-H", "'Accept: application/vnd.github.v3.raw'", "-O", "-L", "https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh"
+            );
 
             curlCopyFileFromGit(CopySetupGit, "setup-git.sh", pathWorking);
             LOG.info("Copied setup-git.sh");
@@ -304,16 +226,16 @@ public class AgentService {
         }
     }
 
-    private void curlCopyFileFromGit(String command, String fileName, String path) {
+    private void curlCopyFileFromGit(List<String> command, String fileName, String path) {
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.directory(new File(path));
             Process process = processBuilder.start();
             process.waitFor();
             Log.info("Process exit value => " + process.exitValue());
             // log error from process builder
             if (process.exitValue() != 0) {
-                LOG.error("Command: " + command.split(" "));
+                LOG.error("Command: " + command.toString());
                 InputStream errorStream = process.getErrorStream();
                 String text = new BufferedReader(
                     new InputStreamReader(errorStream, StandardCharsets.UTF_8))
