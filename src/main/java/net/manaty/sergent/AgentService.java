@@ -252,18 +252,6 @@ public class AgentService {
     // }
 
     public void setupGit(String params) {
-        String pathWorking = File.separator + "tmp" + File.separator;
-        String token = "";
-        try{
-            Map<String, String> parameterMap = new ObjectMapper().readValue(params, new TypeReference<Map<String, String>>() {});
-            token = parameterMap.get("gitinit-token");
-        } catch (Exception ex) {
-            LOG.error("Error when parsing parameters: ", ex);
-        }
-        String installCurl = "sudo apt install curl -y";
-        String CopySetupGit = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/setup-git.sh";
-        String CopyDeployGithubKey = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/deploy-github-key.sh";    
-
         // Check if file doesn't exist in /opt/webdrone/common
         File checkOptWebdrone = new File("/opt/webdrone/common");
         if (checkOptWebdrone.isDirectory()) {
@@ -272,6 +260,18 @@ public class AgentService {
             execute(params);
         } else {
             // if no
+            String pathWorking = File.separator + "tmp" + File.separator;
+            String token = "";
+            try{
+                Map<String, String> parameterMap = new ObjectMapper().readValue(params, new TypeReference<Map<String, String>>() {});
+                token = parameterMap.get("gitinit-token");
+            } catch (Exception ex) {
+                LOG.error("Error when parsing parameters (gitinit-token): ", ex);
+            }
+            String installCurl = "sudo apt install curl -y";
+            String CopySetupGit = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/setup-git.sh";
+            String CopyDeployGithubKey = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/deploy-github-key.sh";        
+
             curlCopyFileFromGit(CopySetupGit, "setup-git.sh", pathWorking);
             LOG.info("Copied setup-git.sh");
             curlCopyFileFromGit(CopyDeployGithubKey, "deploy-github-key.sh", pathWorking);
@@ -284,9 +284,16 @@ public class AgentService {
             File setupGit = new File("/tmp/setup-git.sh");
             File deployGithubKey = new File("/tmp/deploy-github-key.sh");
 
-            setupGit.delete();
-            deployGithubKey.delete();
-            LOG.info("Removed setup-git and deploy-github-key");
+            if (setupGit.delete()) {
+                LOG.info("Removed setup-git");
+            } else {
+                LOG.info("setup-git NOT removed");
+            }
+            if (deployGithubKey.delete()) {
+                LOG.info("Removed deploy-github-key");
+            } else {
+                LOG.info("deploy-github-key NOT removed");
+            }
         }
     }
 
@@ -308,9 +315,9 @@ public class AgentService {
 
     private void chmod(String path, String fileName) {
         try {
+            LOG.info(fileName + " with path: " + path);
             String command = "sudo -i && chmod +x " + path + fileName + " && su debian";
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-            processBuilder.directory(new File(path));
             Process process = processBuilder.start();
             process.waitFor();
             Log.info("Process exit value => " + process.exitValue());
