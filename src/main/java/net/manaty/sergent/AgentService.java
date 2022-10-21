@@ -333,7 +333,7 @@ public class AgentService {
     private void chmod(String path, String fileName) {
         try {
             LOG.info("File path for chmod => " + path + fileName);
-            String command = "chmod +x " + path + fileName;
+            String command = "/bin/sudo chmod +x " + path + fileName;
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             Process process = processBuilder.start();
             process.waitFor();
