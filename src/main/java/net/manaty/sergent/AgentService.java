@@ -1,11 +1,15 @@
 package net.manaty.sergent;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 
@@ -311,10 +315,11 @@ public class AgentService {
             if (process.exitValue() != 0) {
                 LOG.error("Command: " + command.split(" "));
                 InputStream errorStream = process.getErrorStream();
-                int i = 0;
-                while ((i = errorStream.read()) != -1) {
-                    LOG.error((char)i);
-                }
+                String text = new BufferedReader(
+                    new InputStreamReader(errorStream, StandardCharsets.UTF_8))
+                      .lines()
+                      .collect(Collectors.joining("\n"));
+                LOG.error(text);
             }
             process.destroy();
             chmod(path, fileName);
@@ -337,10 +342,11 @@ public class AgentService {
             if (process.exitValue() != 0) {
                 LOG.error("Command: " + command.split(" "));
                 InputStream errorStream = process.getErrorStream();
-                int i = 0;
-                while ((i = errorStream.read()) != -1) {
-                    LOG.error((char)i);
-                }
+                String text = new BufferedReader(
+                    new InputStreamReader(errorStream, StandardCharsets.UTF_8))
+                      .lines()
+                      .collect(Collectors.joining("\n"));
+                LOG.error(text);
             }
             process.destroy();
         } catch (IOException ex) {
