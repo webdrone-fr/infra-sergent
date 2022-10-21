@@ -276,25 +276,34 @@ public class AgentService {
         } catch (Exception ex) {
             LOG.error("Error when parsing parameters: ", ex);
         }
-        String CopySetupGit = "curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/setup-git.sh";
-        String CopyDeployGithubKey = "curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/deploy-github-key.sh";    
+        String installCurl = "sudo apt install curl -y";
+        String CopySetupGit = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/setup-git.sh";
+        String CopyDeployGithubKey = installCurl + " && curl -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/ArthurGrenier/infra-common/contents/deploy-github-key.sh";    
 
+        // Check if file doesn't exist in /opt/webdrone/common
+        File checkOptWebdrone = new File("/opt/webdrone/common");
+        if (checkOptWebdrone.isDirectory()) {
+            // if yes
+            setCommand(".//opt/webdrone/common/setup-git.sh");
+            execute(params);
+        } else {
+            // if no
+            curlCopyFileFromGit(CopySetupGit, "setup-git.sh", pathWorking);
+            LOG.info("Copied setup-git.sh");
+            curlCopyFileFromGit(CopyDeployGithubKey, "deploy-github-key.sh", pathWorking);
+            LOG.info("Copied deploy-github-key.sh");
 
-        curlCopyFileFromGit(CopySetupGit, "setup-git.sh", pathWorking);
-        LOG.info("Copied setup-git.sh");
-        curlCopyFileFromGit(CopyDeployGithubKey, "deploy-github-key.sh", pathWorking);
-        LOG.info("Copied deploy-github-key.sh");
+            setCommand(".//tmp/setup-git.sh");
+            execute(params);
+            LOG.info("Executed setup-git.sh with params");
 
-        setCommand(".//tmp/setup-git.sh");
-        execute(params);
-        LOG.info("Executed setup-git.sh with params");
+            File setupGit = new File("/tmp/setup-git.sh");
+            File deployGithubKey = new File("/tmp/deploy-github-key.sh");
 
-        File setupGit = new File("/tmp/setup-git.sh");
-        File deployGithubKey = new File("/tmp/deploy-github-key.sh");
-
-        setupGit.delete();
-        deployGithubKey.delete();
-        LOG.info("Removed setup-git and deploy-github-key");
+            setupGit.delete();
+            deployGithubKey.delete();
+            LOG.info("Removed setup-git and deploy-github-key");
+        }
     }
 
     private void curlCopyFileFromGit(String command, String fileName, String path) {
@@ -305,14 +314,29 @@ public class AgentService {
             process.waitFor();
             Log.info("Process exit value => " + process.exitValue());
             process.destroy();
-            String filePath = path + fileName;
-            Path pathPermission = Paths.get(filePath);
-            pathPermission.toFile().setExecutable(true);
-            Files.setPosixFilePermissions(pathPermission, PosixFilePermissions.fromString("rwxr-xr-x"));
+            // TODO chmod on the script
+            chmod(path, fileName);
+            processBuilder.command("");
         } catch (IOException ex) {
             LOG.error("Error when copy file from curl: ", ex);
         } catch (InterruptedException ex) {
             LOG.error("Interrupted during curl: ", ex);
+        }
+    }
+
+    private void chmod(String path, String fileName) {
+        try {
+            String command = "sudo -i && chmod +x " + path + fileName + " && su debian";
+            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            processBuilder.directory(new File(path));
+            Process process = processBuilder.start();
+            process.waitFor();
+            Log.info("Process exit value => " + process.exitValue());
+            process.destroy();
+        } catch (IOException ex) {
+            LOG.error("Error when chmod file: ", ex);
+        } catch (InterruptedException ex) {
+            LOG.error("Interrupted during chmod: ", ex);
         }
     }
 }
