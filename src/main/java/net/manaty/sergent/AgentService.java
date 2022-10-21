@@ -1,18 +1,7 @@
 package net.manaty.sergent;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -24,11 +13,6 @@ import org.buildobjects.process.TimeoutException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.FieldInfoList;
-import io.github.classgraph.Resource;
-import io.github.classgraph.ScanResult;
 import io.quarkus.logging.Log;
 
 import org.jboss.logging.Logger;
@@ -314,9 +298,7 @@ public class AgentService {
             process.waitFor();
             Log.info("Process exit value => " + process.exitValue());
             process.destroy();
-            // TODO chmod on the script
             chmod(path, fileName);
-            processBuilder.command("");
         } catch (IOException ex) {
             LOG.error("Error when copy file from curl: ", ex);
         } catch (InterruptedException ex) {
