@@ -195,10 +195,10 @@ public class AgentService {
             // String CopySetupGit ="curl --silent --show-error --fail --output-dir /tmp -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh";
             // String CopyDeployGithubKey ="curl --silent --show-error --fail --output-dir /tmp -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh";        
             List<String> CopySetupGit = Arrays.asList(
-                "curl", "--silent", "--show-error", "--fail", "-H", "'Authorization: token " + token + "'", "-H", "'Accept: application/vnd.github.v3.raw'", "-O", "-L", "https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh"
+                "curl", "--silent", "--show-error", "--fail", "-H", "Authorization: token " + token, "-H", "Accept: application/vnd.github.v3.raw", "-O", "-L", "https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh"
             );
             List<String> CopyDeployGithubKey = Arrays.asList(
-                "curl", "--silent", "--show-error", "--fail", "-H", "'Authorization: token " + token + "'", "-H", "'Accept: application/vnd.github.v3.raw'", "-O", "-L", "https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh"
+                "curl", "--silent", "--show-error", "--fail", "-H", "Authorization: token " + token, "-H", "Accept: application/vnd.github.v3.raw", "-O", "-L", "https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh"
             );
 
             curlCopyFileFromGit(CopySetupGit, "setup-git.sh", pathWorking);
