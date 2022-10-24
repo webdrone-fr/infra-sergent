@@ -2,7 +2,6 @@ package net.manaty.sergent;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.logging.Log;
 
 import org.jboss.logging.Logger;
-import org.xml.sax.InputSource;
 
 @RequestScoped
 public class AgentService {
@@ -208,6 +206,14 @@ public class AgentService {
 
             setCommand(".//tmp/setup-git.sh");
             execute(params);
+
+            if (getError() == null) {
+                LOG.info(String.format("{\"output\":\"%s\"}", getOutput()));
+            } else {
+                LOG.error(String.format("{\"error\":\"%s\",\"output\":\"%s\"}", getError(), getOutput()));
+            }
+
+            // log execute result
             LOG.info("Executed setup-git.sh with params");
 
             File setupGit = new File("/tmp/setup-git.sh");
