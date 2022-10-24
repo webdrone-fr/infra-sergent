@@ -272,7 +272,7 @@ public class AgentService {
         }
     }
 
-    private void chmod(String path, String fileName) {
+    public void chmod(String path, String fileName) {
         try {
             LOG.info("File path for chmod => " + path + fileName);
             String command = "/bin/sudo chmod +x " + path + fileName;

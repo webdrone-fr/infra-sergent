@@ -1,6 +1,8 @@
 package net.manaty.sergent;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -138,6 +140,7 @@ public class AgentResource {
             case "setup-docker":
                 // LOG.debug("params: " + params);
                 try {
+                    service.chmod(commandPath, "setup-docker.sh");
                     result = executeMult("./setup-docker.sh", params);
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
