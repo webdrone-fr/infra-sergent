@@ -189,7 +189,23 @@ public class AgentService {
             } catch (Exception ex) {
                 LOG.error("Error when parsing parameters (gitinit-token): ", ex);
             }
-            // String installCurl = "apt install curl -y";
+            // Install curl
+            List<String> installCurl = Arrays.asList(
+                "apt", "install", "curl", "-y"
+            );
+
+            try {
+                ProcessBuilder processBuilder = new ProcessBuilder(installCurl);
+                processBuilder.directory(new File("/"));
+                Process process = processBuilder.start();
+                process.waitFor();
+                Log.info("Process exit value => " + process.exitValue());
+            } catch (IOException ex) {
+                LOG.error("IOexecption when start the process: ", ex);
+            } catch (InterruptedException ex) {
+                LOG.error("Thread interrupted: ", ex);
+            }
+
             List<String> CopySetupGit = Arrays.asList(
                 "curl", "--silent", "--show-error", "--fail", "-H", "Authorization: token " + token, "-H", "Accept: application/vnd.github.v3.raw", "-O", "-L", "https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh"
             );
