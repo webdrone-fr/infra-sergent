@@ -189,9 +189,7 @@ public class AgentService {
             } catch (Exception ex) {
                 LOG.error("Error when parsing parameters (gitinit-token): ", ex);
             }
-            // String installCurl = "sudo apt install curl -y";
-            // String CopySetupGit ="curl --silent --show-error --fail --output-dir /tmp -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh";
-            // String CopyDeployGithubKey ="curl --silent --show-error --fail --output-dir /tmp -H 'Authorization: token " + token + "' -H 'Accept: application/vnd.github.v3.raw' -O -L https://api.github.com/repos/webdrone-infra/infra-common/contents/deploy-github-key.sh";        
+            // String installCurl = "apt install curl -y";
             List<String> CopySetupGit = Arrays.asList(
                 "curl", "--silent", "--show-error", "--fail", "-H", "Authorization: token " + token, "-H", "Accept: application/vnd.github.v3.raw", "-O", "-L", "https://api.github.com/repos/webdrone-infra/infra-common/contents/setup-git.sh"
             );

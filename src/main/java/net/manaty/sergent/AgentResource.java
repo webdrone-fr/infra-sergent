@@ -91,7 +91,7 @@ public class AgentResource {
      * POST Request to Sergent Service
      * @param command Command to execute 
      * @param params String of parameters to pass with command
-     * @param timeoutSec Delay before timeout, default is 10 sec
+     * @param timeoutSec Delay before timeout, default is 20 sec
      * @return
      */
     @POST
@@ -100,7 +100,7 @@ public class AgentResource {
     public String sergentPost(
             @QueryParam("command") String command,
             String params,
-            @HeaderParam(value = "X-delay-in-sec") @DefaultValue("10") long timeoutSec) {
+            @HeaderParam(value = "X-delay-in-sec") @DefaultValue("20") long timeoutSec) {
         String result = null;
         String commandPath = System.getenv("SERGENT_COMMAND_PATH");
         service.setWorkingPathName(commandPath);
