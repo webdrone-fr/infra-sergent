@@ -141,7 +141,7 @@ public class AgentResource {
                 // LOG.debug("params: " + params);
                 try {
                     service.chmod(commandPath, "/setup-docker.sh");
-                    result = executeMult("./setup-docker.sh", params);
+                    result = execute("./setup-docker.sh", params);
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing setup-docker for setup docker" + params);
