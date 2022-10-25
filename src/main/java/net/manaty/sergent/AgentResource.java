@@ -44,7 +44,7 @@ public class AgentResource {
     public String sergent(
             @QueryParam("command") @DefaultValue("list") String command,
             @QueryParam("params") String params,
-            @HeaderParam(value = "X-delay-in-sec") @DefaultValue("60") long timeoutSec) {
+            @HeaderParam(value = "X-delay-in-sec") @DefaultValue("300") long timeoutSec) {
         String result = null;
         String commandPath = System.getenv("SERGENT_COMMAND_PATH");
         service.setWorkingPathName(commandPath);
@@ -102,7 +102,7 @@ public class AgentResource {
     public String sergentPost(
             @QueryParam("command") String command,
             String params,
-            @HeaderParam(value = "X-delay-in-sec") @DefaultValue("60") long timeoutSec) {
+            @HeaderParam(value = "X-delay-in-sec") @DefaultValue("300") long timeoutSec) {
         String result = null;
         String commandPath = System.getenv("SERGENT_COMMAND_PATH");
         service.setWorkingPathName(commandPath);
