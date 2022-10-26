@@ -217,7 +217,7 @@ public class AgentService {
             LOG.info("Copied setup-git.sh");
             curlCopyFileFromGit(CopyDeployGithubKey, "deploy-github-key.sh", pathWorking);
             LOG.info("Copied deploy-github-key.sh");
-
+            setWorkingPathName("/");
             setCommand(".//tmp/setup-git.sh");
             execute(params);
 
