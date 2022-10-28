@@ -73,6 +73,10 @@ public class AgentService {
         return executionTime;
     }
 
+    /**
+     * set output for log
+     * @param procResult process result of the execution
+     */
     private void setOutput(ProcResult procResult) {
         this.proc = procResult.getCommandLine();
         this.output = procResult.getOutputString();
@@ -133,7 +137,10 @@ public class AgentService {
         doExecute(builder);
     }
 
-
+    /**
+     * Execute the ProcBuilder with params or not
+     * @param builder ProcBuilder to execte
+     */
     private void doExecute(ProcBuilder builder) {
         LOG.debug("workingPath: " + workingPath);
         if (workingPath != null) {
@@ -164,6 +171,9 @@ public class AgentService {
         }
     }
 
+    /**
+     * Global clear of the app
+     */
     private void clear() {
         this.proc = null;
         this.output = null;
@@ -172,6 +182,10 @@ public class AgentService {
         this.executionTime = 0;
     }
 
+    /**
+     * Setup git : installation, initialize the repo
+     * @param params json body with organization name, repo name, token
+     */
     public void setupGit(String params) {
         // Check if file doesn't exist in /opt/webdrone/common
         File checkOptWebdrone = new File("/opt/webdrone/common");
@@ -246,6 +260,12 @@ public class AgentService {
         }
     }
 
+    /**
+     * Copy file from command (curl, ...)
+     * @param command command to copy file
+     * @param fileName how the file is called
+     * @param path where the file is created
+     */
     private void curlCopyFileFromGit(List<String> command, String fileName, String path) {
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -272,6 +292,11 @@ public class AgentService {
         }
     }
 
+    /**
+     * chmod +x (execute) on a file
+     * @param path of the file
+     * @param fileName name
+     */
     public void chmod(String path, String fileName) {
         try {
             LOG.info("File path for chmod => " + path + fileName);

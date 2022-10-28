@@ -1,7 +1,6 @@
 package net.manaty.sergent;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
