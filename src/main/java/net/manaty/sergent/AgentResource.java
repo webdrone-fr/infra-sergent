@@ -14,6 +14,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jboss.logging.Logger;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 
 @Path("/sergent")
 public class AgentResource {
@@ -114,17 +117,35 @@ public class AgentResource {
                 LOG.debug("GitPull Result: "+resultGitpull);
                 if (resultGitpull.contains("output")){
                     try {
-                        // LOG.debug("params: " + params);
-                        String stackNameOutput = executeMult("./getenvvalue.sh","STACK_NAME");
+                        JsonObject paramJson = new Gson().fromJson(params, JsonObject.class);
+                        // Get the three parameters
+                        String paramStackName = paramJson.get("stackName").getAsString();
+                        String paramServiceName = paramJson.get("serviceName").getAsString();
+                        String paramServiceWebContext = paramJson.get("serviceWebContext").getAsString();
                         String usernameOutput = executeMult("./getenvvalue.sh","MEVEO_ADMIN_USERNAME");
                         String passOutput = executeMult("./getenvvalue.sh","MEVEO_ADMIN_PASSWORD");
                         String outputStr= "output\":\"";
-                        String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}")).stripTrailing();
                         String username = usernameOutput.substring(usernameOutput.indexOf(outputStr)+outputStr.length(),usernameOutput.indexOf("\"}")).stripTrailing();
                         String password = passOutput.substring(passOutput.indexOf(outputStr)+outputStr.length(),passOutput.indexOf("\"}")).stripTrailing();
-                        LOG.debug("Stack Name : " + stackName);
-                        result = executeMult("docker", "exec", "-t", stackName+"-meveo", "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/meveo/api/rest/module/initDefault");
-                        LOG.debug("Result: "+ result);
+                        if (paramStackName.isEmpty()) {
+                            String stackNameOutput = executeMult("./getenvvalue.sh","STACK_NAME");
+                            String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}")).stripTrailing();
+                            LOG.debug("Stack Name : " + stackName);
+                            if (paramServiceName.isEmpty() || paramServiceWebContext.isEmpty()) {
+                                result = executeMult("docker", "exec", "-t", stackName+"-meveo", "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/meveo/api/rest/module/initDefault");
+                            } else {
+                                result = executeMult("docker", "exec", "-t", stackName+"-"+paramServiceName, "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/"+paramServiceWebContext+"/api/rest/module/initDefault");
+                            }
+                            LOG.debug("Result: "+ result);
+                        } else {
+                            LOG.debug("Stack Name : " + paramStackName);
+                            if (paramServiceName.isEmpty() || paramServiceWebContext.isEmpty()) {
+                                result = executeMult("docker", "exec", "-t", paramStackName+"-meveo", "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/meveo/api/rest/module/initDefault");
+                            } else {
+                                result = executeMult("docker", "exec", "-t", paramStackName+"-"+paramServiceName, "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/"+paramServiceWebContext+"/api/rest/module/initDefault");
+                            }
+                            LOG.debug("Result: "+ result);
+                        }
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
                                 "Error updating modules: " + params);
