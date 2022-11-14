@@ -128,7 +128,7 @@ public class AgentService {
                             builder.withArg(entry);
                         });
             } catch (Exception e) {
-                // LOG.error("Failed to parse parameters: " + params, e);
+                LOG.error("Failed to parse parameters: " + params, e);
                 this.error = "Failed to parse parameters: " + params;
                 return;
             }

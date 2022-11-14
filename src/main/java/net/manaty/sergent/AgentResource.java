@@ -158,7 +158,7 @@ public class AgentResource {
                     } catch (Exception e) {
                         result = String.format("{\"error\":\"%s\"}",
                                 "Error updating modules: " + params);
-                        // LOG.error("Failed to update modules: " + params, e);
+                        LOG.error("Failed to update modules: " + params, e);
                     }
                 } else {
                     result = String.format("{\"error\":\"%s\"}",
