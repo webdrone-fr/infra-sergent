@@ -118,15 +118,15 @@ public class AgentResource {
                 if (resultGitpull.contains("output")){
                     try {
                         JsonObject paramJson = new Gson().fromJson(params, JsonObject.class);
-                        JsonObject paramDockerJson = paramJson;
-                        paramDockerJson.remove("stackName");
-                        paramDockerJson.remove("serviceName");
-                        paramDockerJson.remove("serviceWebContext");
-                        String paramDocker = paramDockerJson.toString();
-                        LOG.debug("param docker: " + paramDocker);
+                        LOG.debug("All params: " + paramJson);
                         String paramStackName = paramJson.get("stackName").getAsString();
                         String paramServiceName = paramJson.get("serviceName").getAsString();
                         String paramServiceWebContext = paramJson.get("serviceWebContext").getAsString();
+                        paramJson.remove("stackName");
+                        paramJson.remove("serviceName");
+                        paramJson.remove("serviceWebContext");
+                        String paramDocker = paramJson.toString();
+                        LOG.debug("param docker: " + paramDocker);
                         String usernameOutput = executeMult("./getenvvalue.sh","MEVEO_ADMIN_USERNAME");
                         String passOutput = executeMult("./getenvvalue.sh","MEVEO_ADMIN_PASSWORD");
                         String outputStr= "output\":\"";
