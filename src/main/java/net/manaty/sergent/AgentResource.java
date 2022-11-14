@@ -117,8 +117,8 @@ public class AgentResource {
                 LOG.debug("GitPull Result: "+resultGitpull);
                 if (resultGitpull.contains("output")){
                     try {
+                        LOG.debug("params: " + params);
                         JsonObject paramJson = new Gson().fromJson(params, JsonObject.class);
-                        // Get the three parameters
                         String paramStackName = paramJson.get("stackName").getAsString();
                         String paramServiceName = paramJson.get("serviceName").getAsString();
                         String paramServiceWebContext = paramJson.get("serviceWebContext").getAsString();
@@ -132,16 +132,20 @@ public class AgentResource {
                             String stackName = stackNameOutput.substring(stackNameOutput.indexOf(outputStr)+outputStr.length(),stackNameOutput.indexOf("\"}")).stripTrailing();
                             LOG.debug("Stack Name : " + stackName);
                             if (paramServiceName.isEmpty() || paramServiceWebContext.isEmpty()) {
+                                LOG.debug("Default way");
                                 result = executeMult("docker", "exec", "-t", stackName+"-meveo", "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/meveo/api/rest/module/initDefault");
                             } else {
+                                LOG.debug("stackName empty => " + paramStackName + " -- But service and webcontext => " + paramServiceName + " " + paramServiceWebContext);
                                 result = executeMult("docker", "exec", "-t", stackName+"-"+paramServiceName, "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/"+paramServiceWebContext+"/api/rest/module/initDefault");
                             }
                             LOG.debug("Result: "+ result);
                         } else {
                             LOG.debug("Stack Name : " + paramStackName);
                             if (paramServiceName.isEmpty() || paramServiceWebContext.isEmpty()) {
+                                LOG.debug("stackName not empty => " + paramStackName);
                                 result = executeMult("docker", "exec", "-t", paramStackName+"-meveo", "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/meveo/api/rest/module/initDefault");
                             } else {
+                                LOG.debug("stackName not empty => " + paramStackName + " -- And service and webcontext => " + paramServiceName + " " + paramServiceWebContext);
                                 result = executeMult("docker", "exec", "-t", paramStackName+"-"+paramServiceName, "curl", "-X", "POST", "-H", "Content-Type: application/json", "--user", username+":"+password, "--max-time", String.valueOf(timeoutSec) ,"--data", params, "localhost:8080/"+paramServiceWebContext+"/api/rest/module/initDefault");
                             }
                             LOG.debug("Result: "+ result);
