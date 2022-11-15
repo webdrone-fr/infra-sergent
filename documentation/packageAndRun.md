@@ -1,11 +1,11 @@
-## Running the application in dev mode
+# Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
 ```shell script
 ./mvnw compile quarkus:dev
 ```
 
-## Packaging and running the application
+# Packaging and running the application
 
 The application can be packaged using:
 ```shell script
@@ -30,7 +30,7 @@ In short, you can build (skip test) and run the application with this single com
 ./mvnw package -Dquarkus.package.type=uber-jar -Dmaven.test.skip=true && java -jar target/sergent-1.1.0-SNAPSHOT-runner.jar
 ```
 
-## Packaging native container in a linux+docker env
+# Packaging native container in a linux+docker env
 You need at least 4Go free memory to perform the build
 
 

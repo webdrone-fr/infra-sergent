@@ -1,4 +1,4 @@
-## Creating a native executable
+# Creating a native executable
 
 You can create a native executable using: 
 ```shell script
