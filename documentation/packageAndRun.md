@@ -23,7 +23,12 @@ If you want to build and skip tests an _über-jar_, execute the following comman
 ./mvnw package -Dquarkus.package.type=uber-jar -Dmaven.test.skip=true
 ```
 
-The application is now runnable using `java -jar target/sergent-1.0-runner.jar`.
+The application is now runnable using `java -jar target/sergent-1.1.0-SNAPSHOT-runner.jar`.
+
+In short, you can build (skip test) and run the application with this single command :
+```sh
+./mvnw package -Dquarkus.package.type=uber-jar -Dmaven.test.skip=true && java -jar target/sergent-1.1.0-SNAPSHOT-runner.jar
+```
 
 ## Packaging native container in a linux+docker env
 You need at least 4Go free memory to perform the build
