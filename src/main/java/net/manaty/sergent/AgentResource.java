@@ -88,7 +88,7 @@ public class AgentResource {
                 break;
             case "docker-status":
                 try {
-                    result = executeMult("docker", "ps", "--format", "\"table {{.Status}}\t{{.Names}}\"");
+                    result = executeMult("docker", "ps", "--format", "table {{.Status}}\t{{.Names}}");
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing docker-status with params" + params);
