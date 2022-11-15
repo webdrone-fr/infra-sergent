@@ -30,7 +30,9 @@ public class AgentResource {
             "setup-git",
             "deploy-kc-theme",
             "update-modules",
-            "deploy");
+            "deploy",
+            "restart-docker",
+            "docker-status");
 
     @Inject
     AgentService service;
@@ -82,6 +84,15 @@ public class AgentResource {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing deploy cmd: " + params);
                     // LOG.error("Failed to execute deploy cmd: " + params, e);
+                }
+                break;
+            case "docker-status":
+                try {
+                    result = executeMult("docker", "ps");
+                } catch (Exception e) {
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error executing docker-status with params" + params);
+                    LOG.error("Failed to execute docker-status with params: " + params, e);
                 }
                 break;
             default:
@@ -184,6 +195,21 @@ public class AgentResource {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing setup-git with params" + params);
                     LOG.error("Failed to execute setup-git with params: " + params, e);
+                }
+                break;
+            case "restart-docker":
+                try {
+                    JsonObject paramJson = new Gson().fromJson(params, JsonObject.class);
+                    if (paramJson.get("container").getAsString().isEmpty()) {
+                        result = executeMult("docker-compose", "down") + "\n";
+                        result += executeMult("docker-compose", "up", "-d");
+                    } else {
+                        result = executeMult("docker", "restart", paramJson.get("container").getAsString());
+                    }
+                } catch (Exception e) {
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error executing restart-docker with params" + params);
+                    LOG.error("Failed to execute restart-docker with params: " + params, e);
                 }
                 break;
             default:
