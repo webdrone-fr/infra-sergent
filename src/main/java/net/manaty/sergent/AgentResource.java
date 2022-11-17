@@ -32,7 +32,8 @@ public class AgentResource {
             "update-modules",
             "deploy",
             "restart-docker",
-            "docker-status");
+            "docker-status",
+            "sergent-update");
 
     @Inject
     AgentService service;
