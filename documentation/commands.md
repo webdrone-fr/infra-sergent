@@ -41,6 +41,11 @@ to get information on docker container state, use `docker-status` command name
 `https://<server-domain>/sergent?command=docker-status`  
 The command will execute a `docker ps --format "table {{.Statud}}\t{{.Names}}"`
 
+### sergent-update
+
+to execute [sergent-update.sh](pushOnInfra), use `sergent-update` command name  
+`https://<server-domain>/sergent?command=sergent-update`  
+
 ## Post commands
 Path : `server-domain-name.fr:8001/sergent?command=<command-name>`  
 Parameters are given with the body in json
