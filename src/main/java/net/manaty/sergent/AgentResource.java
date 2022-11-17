@@ -91,10 +91,18 @@ public class AgentResource {
                     result = executeMult("docker", "ps", "--format", "table {{.Status}}\t{{.Names}}");
                 } catch (Exception e) {
                     result = String.format("{\"error\":\"%s\"}",
-                            "Error executing docker-status with params" + params);
-                    LOG.error("Failed to execute docker-status with params: " + params, e);
+                            "Error executing docker-status");
+                    LOG.error("Failed to execute docker-status: ", e);
                 }
                 break;
+            case "sergent-update":
+                try {
+                    result = execute("./sergent-update.sh");
+                } catch (Exception e) {
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error executing sergent-update");
+                    LOG.error("Failed to execute sergent-update: ", e);
+                }
             default:
                 result = String.format("{\"commands\":[%s]}", String.join(",", COMMANDS.stream()
                         .map(cmd -> String.format("\"%s\"", cmd)).toArray(String[]::new)));
@@ -106,7 +114,7 @@ public class AgentResource {
      * POST Request to Sergent Service
      * @param command Command to execute 
      * @param params String of parameters to pass with command
-     * @param timeoutSec Delay before timeout, default is 20 sec
+     * @param timeoutSec Delay before timeout, default is 300 sec
      * @return
      */
     @POST
