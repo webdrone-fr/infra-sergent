@@ -14,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jboss.logging.Logger;
 
+import com.fasterxml.jackson.core.base.ParserMinimalBase;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -96,14 +97,6 @@ public class AgentResource {
                     LOG.error("Failed to execute docker-status: ", e);
                 }
                 break;
-            case "sergent-update":
-                try {
-                    result = execute("./sergent-update.sh");
-                } catch (Exception e) {
-                    result = String.format("{\"error\":\"%s\"}",
-                            "Error executing sergent-update");
-                    LOG.error("Failed to execute sergent-update: ", e);
-                }
             default:
                 result = String.format("{\"commands\":[%s]}", String.join(",", COMMANDS.stream()
                         .map(cmd -> String.format("\"%s\"", cmd)).toArray(String[]::new)));
@@ -219,6 +212,15 @@ public class AgentResource {
                     result = String.format("{\"error\":\"%s\"}",
                             "Error executing restart-docker with params" + params);
                     LOG.error("Failed to execute restart-docker with params: " + params, e);
+                }
+                break;
+            case "manage-sergent":
+                try {
+                    result = execute("./sergent.sh", params);
+                } catch (Exception e) {
+                    result = String.format("{\"error\":\"%s\"}",
+                            "Error executing manage-sergent with param: " + params);
+                    LOG.error("Failed to execute manage-sergent with param: " + params, e);
                 }
                 break;
             default:

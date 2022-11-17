@@ -41,11 +41,6 @@ to get information on docker container state, use `docker-status` command name
 `https://<server-domain>/sergent?command=docker-status`  
 The command will execute a `docker ps --format "table {{.Statud}}\t{{.Names}}"`
 
-### sergent-update
-
-to execute [sergent-update.sh](pushOnInfra), use `sergent-update` command name  
-`https://<server-domain>/sergent?command=sergent-update`  
-
 ## Post commands
 Path : `server-domain-name.fr:8001/sergent?command=<command-name>`  
 Parameters are given with the body in json
@@ -94,3 +89,11 @@ Parameter :
 
 `https://<server-domain>/sergent?command=restart-docker`  
 The command will execute a `docker-compose down && docker-compose up -d`, if no container name are provided. And `docker restart <container-name>`, if a docker container is provided
+
+### manage-sergent
+
+to execute [sergent.sh](pushOnInfra), use `manage-sergent` command name  
+Parameter :
+- `install` : true for installing ; false for updating  
+
+`https://<server-domain>/sergent?command=manage-sergent`  
