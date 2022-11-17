@@ -14,7 +14,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jboss.logging.Logger;
 
-import com.fasterxml.jackson.core.base.ParserMinimalBase;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -34,7 +33,7 @@ public class AgentResource {
             "deploy",
             "restart-docker",
             "docker-status",
-            "sergent-update");
+            "manage-sergent");
 
     @Inject
     AgentService service;
