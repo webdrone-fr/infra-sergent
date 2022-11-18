@@ -2,7 +2,7 @@
 The role of sergent is to affer an endpoint that allow to execute management commands on the server
 
 ## Get commands
-Path : `server-domain-name.fr:8001/sergent?command=<command-name>`  
+Path : `server-domain-name.fr:8880/sergent?command=<command-name>`  
 Parameters are given with path params
 
 ### list
@@ -23,7 +23,10 @@ to execute [gitpull.sh](https://github.com/webdrone-infra/infra-common/blob/main
 ### install
 
 to execute [install.sh](https://github.com/webdrone-infra/infra-common/blob/main/install.sh), use `install` command name  
-`https://<server-domain>/sergent?command=install`
+`https://<server-domain>/sergent?command=install`  
+Optional parameters :
+- `install` : true for installing ; false for updating
+- `version` : name of sergent's docker image (default latest)  
 
 ### deploy-kc-theme
 
@@ -42,7 +45,7 @@ to get information on docker container state, use `docker-status` command name
 The command will execute a `docker ps --format "table {{.Statud}}\t{{.Names}}"`
 
 ## Post commands
-Path : `server-domain-name.fr:8001/sergent?command=<command-name>`  
+Path : `server-domain-name.fr:8880/sergent?command=<command-name>`  
 Parameters are given with the body in json
 
 ### update-module
@@ -92,8 +95,9 @@ The command will execute a `docker-compose down && docker-compose up -d`, if no 
 
 ### manage-sergent
 
-to execute [sergent.sh](pushOnInfra), use `manage-sergent` command name  
+to execute [sergent.sh](https://github.com/webdrone-infra/infra-common/blob/main/sergent.sh), use `manage-sergent` command name  
 Parameter :
-- `install` : true for installing ; false for updating  
+- `install` : true for installing ; false for updating
+- `version` : name of sergent's docker image (default latest)  
 
 `https://<server-domain>/sergent?command=manage-sergent`  
