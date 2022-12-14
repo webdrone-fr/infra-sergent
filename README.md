@@ -29,3 +29,7 @@ The environment variable `SERGENT_COMMAND_PATH` must contain the working path fo
 ## Docker image
 
 [Manage docker image](./documentation/dockerImage.md)
+
+## Update sergent
+
+[Update Sergent](./documentation/updateSergent.md)
