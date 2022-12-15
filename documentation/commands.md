@@ -25,7 +25,7 @@ to execute [gitpull.sh](https://github.com/webdrone-infra/infra-common/blob/main
 to execute [install.sh](https://github.com/webdrone-infra/infra-common/blob/main/install.sh), use `install` command name  
 `https://<server-domain>/sergent?command=install`  
 Optional parameters :
-- `install` : true for installing ; false for updating
+- `install` : true for installing ; false for updating ; or nothing/empty if you want to skip this part  
 - `version` : name of sergent's docker image (default latest)  
 
 ### deploy-kc-theme
