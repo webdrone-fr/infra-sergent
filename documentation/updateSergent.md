@@ -65,6 +65,6 @@ echo "sergent.service started."
 You can try to execute a sergent command with postman, like "list" to test the correct installation  
 You can also check sergent status with the command ``systemctl status sergent.service`` or access sergent's log in ``/var/log/sergent.log``  
 
-After all you can the INFRA team to create you a new sergent-image with the instance we've created before and delete the old one.  
+After everything you can ask the INFRA team to create you a new sergent-image with the instance we've created before and delete the old one.  
 
 It's important to update **every** sergent-image version for all possible server providers to remain consistent in the sergent versions used
